@@ -7,7 +7,7 @@ far away....
 
 ---
 
-![Millennium Falcon](placeholder.jpg)
+![Millennium Falcon](/images/millennium-falcon.png)
 
 ---
 
@@ -21,4 +21,4 @@ far away....
 
 Use the Force!
 
-![Lightsabers](placeholder2.jpg) 
+![Lightsabers](/images/light-saber.png) 
