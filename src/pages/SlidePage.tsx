@@ -1,5 +1,7 @@
 import { useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 // import { useSlides } from '@/hooks/useSlides'; // Using alias - caused issue
 import { useSlides } from '../hooks/useSlides'; // Using relative path
 
@@ -29,13 +31,18 @@ export default function SlidePage() {
   // Adjust for 0-based index
   const currentSlideContent = slides[slideNumber - 1];
 
+  // Use a container div for potential slide styling later
   return (
-    <div>
+    <div className="slide-container">
       {/* Temporary display of raw markdown */}
       {/* We'll add proper markdown rendering later */}
-      <pre style={{ whiteSpace: 'pre-wrap', wordWrap: 'break-word' }}>
+      {/* <pre style={{ whiteSpace: 'pre-wrap', wordWrap: 'break-word' }}>
         {currentSlideContent}
-      </pre>
+      </pre> */}
+      {/* Render markdown content */}
+      <ReactMarkdown remarkPlugins={[remarkGfm]}>
+        {currentSlideContent}
+      </ReactMarkdown>
     </div>
   );
 } 

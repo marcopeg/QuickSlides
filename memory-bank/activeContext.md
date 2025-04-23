@@ -1,7 +1,7 @@
 # Active Context
 
-*   **Current Focus:** Implement slide rendering (basic markdown).
-*   **Recent Changes:** Implemented basic routing (`/`, `/slide/:id`) using React Router. Created `SlidePage` component that fetches slide data via `useSlides` hook and handles invalid slide numbers by redirecting to slide 1.
-*   **Next Steps:** Integrate a markdown rendering library (e.g., `react-markdown`) into `SlidePage` to display formatted content instead of raw markdown.
-*   **Open Questions/Decisions:** Which markdown library to use? `react-markdown` is popular. How to handle images within markdown?
-*   **Blockers:** None currently identified.
+*   **Current Focus:** Implement remaining navigation features (Fullscreen key 'f').
+*   **Recent Changes:** Implemented keyboard arrow navigation (left/right) in App.tsx. Documented path alias issues and workarounds (relative paths) in progress.md.
+*   **Next Steps:** Implement 'f' key listener for fullscreen toggle. Address specific image rendering rules.
+*   **Open Questions/Decisions:** How to implement fullscreen (Browser API)? How to handle image rendering rules?
+*   **Blockers:** Path alias issue might need further investigation later if relative paths become cumbersome.
