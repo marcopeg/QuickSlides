@@ -1,7 +1,7 @@
 # Active Context
 
-*   **Current Focus:** Setup slide routing (`/` and `/slide/:id`).
-*   **Recent Changes:** Created `useSlides` hook (`src/hooks/useSlides.ts`) to parse `src/slides.md` using Vite's `?raw` import.
-*   **Next Steps:** Define routes in the main application component (`App.tsx` likely) using React Router. Create a basic `Slide` component placeholder.
-*   **Open Questions/Decisions:** How to handle invalid slide numbers in the URL? (Redirect to /slide/1? Show 404?).
+*   **Current Focus:** Implement slide rendering (basic markdown).
+*   **Recent Changes:** Implemented basic routing (`/`, `/slide/:id`) using React Router. Created `SlidePage` component that fetches slide data via `useSlides` hook and handles invalid slide numbers by redirecting to slide 1.
+*   **Next Steps:** Integrate a markdown rendering library (e.g., `react-markdown`) into `SlidePage` to display formatted content instead of raw markdown.
+*   **Open Questions/Decisions:** Which markdown library to use? `react-markdown` is popular. How to handle images within markdown?
 *   **Blockers:** None currently identified.
