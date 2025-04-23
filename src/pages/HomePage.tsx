@@ -36,30 +36,34 @@ const HomePage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 p-4 flex justify-center items-center">
-      <div className="w-full max-w-4xl h-[90vh] flex flex-col bg-white dark:bg-gray-800 shadow-xl rounded-lg p-6 md:p-8">
-        <h1 className="text-2xl md:text-3xl font-bold mb-6 text-center text-gray-800 dark:text-gray-200">QuickSlides</h1>
-        <textarea
-          value={content}
-          onChange={handleContentChange}
-          placeholder="Enter your slides here, separated by '---'"
-          className="flex-grow resize-none mt-2 mb-8 p-3 border border-gray-300 dark:border-gray-600 rounded-md bg-gray-50 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 text-sm font-mono"
-        />
-        <div className="flex justify-center space-x-4">
-          <button
-            onClick={handleReset}
-            title="Reset content to default slides.md"
-            className="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 text-sm font-medium rounded-md shadow-sm text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800"
-          >
-            <RotateCcw className="mr-2 h-4 w-4" /> Reset
-          </button>
-          <button
-            onClick={handlePresent}
-            title="Present slides"
-            className="inline-flex items-center px-6 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:focus:ring-offset-gray-900"
-          >
-            <Play className="mr-2 h-4 w-4" /> Present
-          </button>
+    <div className="h-screen w-full bg-gray-100 p-4 flex items-center justify-center">
+      <div className="w-full max-w-4xl bg-white rounded-lg shadow-lg overflow-hidden">
+        <div className="p-6">
+          <h1 className="text-3xl font-bold text-center mb-6">QuickSlides</h1>
+          
+          <div className="mb-6 mx-8">
+            <textarea
+              value={content}
+              onChange={handleContentChange}
+              placeholder="Enter your slides here, separated by '---'"
+              className="w-full h-96 p-4 border border-gray-300 rounded-md bg-gray-50 resize-none font-mono text-sm"
+            />
+          </div>
+          
+          <div className="flex justify-center gap-4">
+            <button
+              onClick={handleReset}
+              className="px-4 py-2 bg-white border border-gray-300 rounded-md text-gray-700 flex items-center hover:bg-gray-50"
+            >
+              <RotateCcw className="mr-2 h-4 w-4" /> Reset
+            </button>
+            <button
+              onClick={handlePresent}
+              className="px-4 py-2 bg-orange-500 text-white rounded-md flex items-center hover:bg-orange-600"
+            >
+              <Play className="mr-2 h-4 w-4" /> Present
+            </button>
+          </div>
         </div>
       </div>
     </div>
