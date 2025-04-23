@@ -1,9 +1,9 @@
 # System Patterns
 
-*   **Architecture Overview:** React PWA application using Vite, React Router, TailwindCSS, Shadcn/UI.
-*   **Key Components:** `App` (Routing, Keyboard Nav, Fullscreen), `SlidesViewer` (inside App, fetches active slide, renders Carousel), `Carousel` (Handles sliding animation, displays slides), `SlidePage` (Renders single slide markdown), `useSlides` (Hook for parsing `slides.md`).
-*   **Data Flow:** `slides.md` -> `useSlides` -> `App`/`SlidesViewer` -> `Carousel` -> `SlidePage`.
-*   **State Management:** Current slide index primarily managed via URL parameters (`/slide/:slideNumber`). Fullscreen state managed via browser API.
+*   **Architecture Overview:** React PWA application using Vite, React Router, TailwindCSS. (Shadcn/UI initialized but components seem missing).
+*   **Key Components:** `App` (Routing, Keyboard Nav [Arrows, 'f', 'Esc'], Fullscreen), `HomePage` (Renders root `/`, provides textarea for slide editing, saves to local storage), `SlidesViewer` (Renders Carousel for `/slide/:slideNumber`), `Carousel` (Handles sliding animation), `SlidePage` (Renders single slide markdown), `useSlides` (Hook for parsing markdown from localStorage/`slides.md`).
+*   **Data Flow:** `localStorage['quickslides-content']` or `slides.md?raw` -> `useSlides` -> `App`/`SlidesViewer` -> `Carousel` -> `SlidePage`. User edits in `HomePage` -> `localStorage['quickslides-content']`.
+*   **State Management:** Slide content managed via local storage (`quickslides-content`) and React state (`HomePage`, `useSlides`). Current slide index primarily managed via URL parameters (`/slide/:slideNumber`). Fullscreen state managed via browser API.
 *   **Design Patterns:** Container/Presentational (App/SlidesViewer manage state, Carousel/SlidePage display), Hooks (`useSlides`).
-*   **API Design:** n/a
-*   **Important Decisions:** URL-based state management for slides. CSS transform/transition for slide animation within `Carousel` component.
+*   **API Design:** n/a (Uses browser localStorage API).
+*   **Important Decisions:** URL-based state management for slides index. Local storage for slide content persistence. CSS transform/transition for slide animation. Standard HTML elements used for UI on HomePage due to missing Shadcn components. Keyboard shortcuts (Arrows, 'f', 'Esc') implemented in `App.tsx`.

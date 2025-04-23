@@ -2,7 +2,6 @@ import { useEffect } from 'react'
 import {
   Routes,
   Route,
-  Navigate,
   useLocation,
   useNavigate,
   useParams,
@@ -10,6 +9,7 @@ import {
 import { useSlides } from './hooks/useSlides'
 import Carousel from './components/Carousel'
 import SlidePage from './pages/SlidePage'
+import HomePage from './pages/HomePage'
 import './App.css'
 
 // Component to handle fetching slide number and rendering Carousel
@@ -75,8 +75,13 @@ function App() {
         } else if (document.exitFullscreen) {
           document.exitFullscreen()
         }
+      } else if (event.key === 'Escape') {
+        // Navigate to homepage if Escape is pressed on a slide page
+        navigate('/')
+        return; // Stop further processing in this handler
       }
 
+      // Only navigate if nextSlide was set (for Arrow keys)
       if (nextSlide !== null) {
         navigate(`/slide/${nextSlide}`)
       }
@@ -94,10 +99,10 @@ function App() {
   return (
     <div className="App w-screen h-screen">
       <Routes>
-        {/* Redirect root path to the first slide */}
-        <Route path="/" element={<Navigate to="/slide/1" replace />} />
+        {/* Route for the new homepage */}
+        <Route path="/" element={<HomePage />} />
 
-        {/* Route for individual slides - Component added later */}
+        {/* Route for individual slides */}
         <Route path="/slide/:slideNumber" element={<SlidesViewer />} />
 
         {/* Optional: Add a 404 handler later */}
