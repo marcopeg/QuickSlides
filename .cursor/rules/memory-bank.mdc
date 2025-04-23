@@ -24,6 +24,10 @@ flowchart TD
     AC --> P[progress.md]
 \```
 
+## Memory Bank Storage
+
+The memory bank is available in `/memory-bank`
+
 ### Core Files (Required)
 1. `projectbrief.md`
    - Foundation document that shapes all other files
