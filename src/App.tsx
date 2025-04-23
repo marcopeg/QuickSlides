@@ -5,12 +5,44 @@ import {
   Navigate,
   useLocation,
   useNavigate,
+  useParams,
 } from 'react-router-dom'
 import { useSlides } from './hooks/useSlides'
+import Carousel from './components/Carousel'
+import SlidePage from './pages/SlidePage'
 import './App.css'
 
-// Placeholder for the component we will create
-import SlidePage from './pages/SlidePage'
+// Component to handle fetching slide number and rendering Carousel
+const SlidesViewer = () => {
+  const { slideNumber: slideNumberParam } = useParams<{ slideNumber: string }>();
+  const navigate = useNavigate();
+  const slides = useSlides(); // Fetch slides here
+
+  const slideNumber = parseInt(slideNumberParam || '1', 10);
+  const activeIndex = slideNumber - 1; // Calculate 0-based index for Carousel
+
+  // Validation and redirection logic moved here from SlidePage
+  useEffect(() => {
+    const isValidSlideNumber = !isNaN(slideNumber) && slideNumber >= 1 && slideNumber <= slides.length;
+    if (!isValidSlideNumber && slides.length > 0) {
+      console.warn(`Invalid slide number: ${slideNumberParam}. Redirecting to slide 1.`);
+      navigate('/slide/1', { replace: true });
+    }
+  }, [slideNumberParam, slideNumber, slides.length, navigate]);
+
+  // Ensure we have slides and a valid index before rendering
+  if (slides.length === 0 || activeIndex < 0 || activeIndex >= slides.length) {
+    return null; // Or a loading/error state
+  }
+
+  return (
+    <Carousel activeIndex={activeIndex}>
+      {slides.map((content, index) => (
+        <SlidePage key={index} content={content} />
+      ))}
+    </Carousel>
+  );
+};
 
 function App() {
   const location = useLocation()
@@ -60,14 +92,13 @@ function App() {
   }, [location, navigate, totalSlides])
 
   return (
-    // Main container styling can be added later
-    <div className="App">
+    <div className="App w-screen h-screen">
       <Routes>
         {/* Redirect root path to the first slide */}
         <Route path="/" element={<Navigate to="/slide/1" replace />} />
 
         {/* Route for individual slides - Component added later */}
-        <Route path="/slide/:slideNumber" element={<SlidePage />} />
+        <Route path="/slide/:slideNumber" element={<SlidesViewer />} />
 
         {/* Optional: Add a 404 handler later */}
         {/* <Route path="*" element={<div>Not Found</div>} /> */}

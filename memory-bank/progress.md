@@ -1,6 +1,6 @@
 # Progress
 
-*   **What Works:** Basic Vite project structure (React/TS), React Router installed, TailwindCSS installed and configured, Shadcn/UI initialized, Example `slides.md` created in `src/`, `useSlides` hook created for data parsing, Basic slide routing (`/` -> `/slide/1`, `/slide/:id`) implemented with `SlidePage` component, Invalid slide number redirects to `/slide/1`, Basic Markdown rendering in slides using `react-markdown`, Basic slide container styling, All core Data tasks (creation, parsing, routing) complete, Keyboard navigation (ArrowLeft/Right) implemented in `App.tsx`.
-*   **What Needs Building/Fixing:** Implement slide navigation (animation, full-screen key), Specific image rendering logic (full-slide vs inline).
-*   **Current Status:** Basic slide viewing and keyboard navigation functional.
-*   **Known Issues/Risks:** Placeholder images used in `slides.md`. Specific image rendering rules not implemented yet. No slide transition animations. Path alias (`@/`) resolution issues encountered (using relative paths as workaround). 
+*   **What Works:** Basic Vite project structure (React/TS), React Router installed, TailwindCSS installed and configured, Shadcn/UI initialized, Example `slides.md` created in `src/`, `useSlides` hook created for data parsing, Basic slide routing (`/` -> `/slide/1`, `/slide/:id`) implemented, Invalid slide number redirects to `/slide/1`, Basic Markdown rendering in slides using `react-markdown` (`SlidePage`), Basic slide container styling, All core Data tasks complete, Keyboard navigation (ArrowLeft/Right) implemented in `App.tsx`, Fullscreen toggle ('f' key) implemented in `App.tsx`, Sliding transition animation implemented via `Carousel` component.
+*   **What Needs Building/Fixing:** Implement specific image rendering logic (full-slide vs inline).
+*   **Current Status:** Basic slide viewing and keyboard navigation functional, including fullscreen and animated transitions.
+*   **Known Issues/Risks:** Placeholder images used in `slides.md`. Specific image rendering rules not implemented yet. Path alias (`@/`) resolution issues encountered (using relative paths as workaround). 

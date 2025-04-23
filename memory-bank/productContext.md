@@ -20,7 +20,7 @@
     - [x] Setup the entry page (/) to render the first slide
 - [ ] Navigation
     - [x] Support arrow keys to navigate to next/prev slide
-    - [ ] Animate the slide transition with a sliding effect
+    - [x] Animate the slide transition with a sliding effect
     - [x] Support the key "f" to enter/exit full-screen
 - [ ] Slide rendering
     - [x] Render basic markdown in a slide
