@@ -21,7 +21,7 @@
 - [ ] Navigation
     - [x] Support arrow keys to navigate to next/prev slide
     - [ ] Animate the slide transition with a sliding effect
-    - [ ] Support the key "f" to enter/exit full-screen
+    - [x] Support the key "f" to enter/exit full-screen
 - [ ] Slide rendering
     - [x] Render basic markdown in a slide
     - [ ] If a slide has only one image in it, render it so that it covers the entire slide

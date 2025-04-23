@@ -37,6 +37,12 @@ function App() {
         if (currentSlide > 1) {
           nextSlide = currentSlide - 1
         }
+      } else if (event.key === 'f') {
+        if (!document.fullscreenElement) {
+          document.documentElement.requestFullscreen()
+        } else if (document.exitFullscreen) {
+          document.exitFullscreen()
+        }
       }
 
       if (nextSlide !== null) {
