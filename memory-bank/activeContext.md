@@ -1,7 +1,7 @@
 # Active Context
 
-*   **Current Focus:** [What is the main task or feature being worked on?]
-*   **Recent Changes:** [Summary of significant changes since the last update]
-*   **Next Steps:** [Immediate tasks or goals]
-*   **Open Questions/Decisions:** [Any unresolved points or choices to be made]
-*   **Blockers:** [Anything preventing progress?] 
+*   **Current Focus:** Creating example slide data (`slides.md`).
+*   **Recent Changes:** Initialized Shadcn/UI, configured path aliases in `tsconfig.json` and `vite.config.ts`.
+*   **Next Steps:** Create `slides.md` example file, implement slide data parsing, set up basic slide routing.
+*   **Open Questions/Decisions:** None currently identified.
+*   **Blockers:** None currently identified.

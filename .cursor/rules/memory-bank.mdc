@@ -36,6 +36,7 @@ flowchart TD
    - Problems it solves
    - How it should work
    - User experience goals
+   - Project Backlog
 
 3. `activeContext.md`
    - Current work focus

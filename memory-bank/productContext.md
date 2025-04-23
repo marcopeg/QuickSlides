@@ -12,7 +12,7 @@
 - [x] Setup
     - [x] Install & Setup ReactRouter
     - [x] Install & Setup TailwindCSS
-    - [ ] Install & Setup Shadcn/UI
+    - [x] Install & Setup Shadcn/UI
 - [ ] Data
     - [ ] Create an example file "slides.md" that contain the slides for a Star Wars presentation. The slide separator is "---".
     - [ ] Read and parse the "slides.md" to create the in-memory presentation data
