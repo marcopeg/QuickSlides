@@ -2,8 +2,14 @@
 
 ---
 
-A long time ago in a galaxy far,
+## A new title
+
+---
+
+A long time ago in a galaxy far,  
 far away....
+
+dwedew
 
 ---
 
@@ -13,12 +19,17 @@ far away....
 
 ## Core Planets
 
-* Tatooine
-* Hoth
-* Endor
+- Tatooine
+- Hoth
+- Endor
 
 ---
 
 Use the Force!
 
+![Lightsabers](/images/light-saber.png) 
+
+---
+
+![Millennium Falcon](/images/millennium-falcon.png)
 ![Lightsabers](/images/light-saber.png) 

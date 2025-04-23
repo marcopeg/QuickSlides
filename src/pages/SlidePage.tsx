@@ -39,11 +39,13 @@ const SlidePage: React.FC<SlidePageProps> = ({ content }) => {
 
   // Render the passed markdown content
   return (
-    <div className="slide-container w-full h-full flex items-center justify-center">
-      {/* Render markdown content, explicitly cast to string */}
-      <ReactMarkdown remarkPlugins={[remarkGfm]}>
-        {String(content || '')} 
-      </ReactMarkdown>
+    <div className="slide-container w-full h-full flex items-center justify-center p-8">
+      {/* Apply prose for markdown styling */}
+      <div className="prose prose-invert max-w-none">
+        <ReactMarkdown remarkPlugins={[remarkGfm]}>
+          {String(content || '')} 
+        </ReactMarkdown>
+      </div>
     </div>
   );
 };
