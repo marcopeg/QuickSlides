@@ -1,8 +1,8 @@
 # Project Brief
 
-*   **Project Name:** [Insert Project Name Here]
-*   **Elevator Pitch:** [A one-sentence summary of the project]
-*   **Core Requirements:** [List the essential needs the project must fulfill]
-*   **High-Level Goals:** [What are the main objectives?]
-*   **Scope:** [Define the boundaries of the project]
-*   **Stakeholders:** [Who are the key people involved or affected?] 
+*   **Project Name:** SlideDeck MVC
+*   **Elevator Pitch:** I forgot my slide deck and need to build one in minutes to support my presentation
+*   **Core Requirements:** define simple slides as markdown with text and images, move between slides, enter full-screen mode
+*   **High-Level Goals:** offer a slide deck support during a live presentation
+*   **Scope:** minimal slide deck rendering functionality. Powerpoint inspired, but minimal.
+*   **Stakeholders:** a presenter with a computer and a projector

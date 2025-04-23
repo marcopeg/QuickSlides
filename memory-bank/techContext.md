@@ -1,8 +1,8 @@
 # Tech Context
 
-*   **Languages/Frameworks:** [List primary technologies, e.g., Python/Django, React/Node.js]
-*   **Database:** [e.g., PostgreSQL, MongoDB]
-*   **Key Libraries/Dependencies:** [List crucial external tools]
-*   **Development Setup:** [Instructions for setting up the dev environment]
-*   **Deployment:** [How is it deployed? e.g., Docker, AWS Lambda]
-*   **Technical Constraints:** [Any limitations, e.g., Performance targets, browser support] 
+*   **Languages/Frameworks:** Typescript, React
+*   **Database:** n/a
+*   **Key Libraries/Dependencies:** ViteJS, ReactRouter, TailwindCSS, Shadcn/UI
+*   **Development Setup:** basic ViteJS project based on Typescript and React
+*   **Deployment:** Static deploy on Netlify
+*   **Technical Constraints:** should work on both desktop and mobile

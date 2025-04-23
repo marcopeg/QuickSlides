@@ -1,8 +1,8 @@
 # Product Context
 
-*   **Problem:** [What user problem does this project solve?]
-*   **Goal:** [What is the primary objective or desired outcome?]
-*   **Target User:** [Who is this project for?]
-*   **Key Features:** [List the core functionalities]
-*   **Non-Goals:** [What is explicitly out of scope?]
-*   **Success Metrics:** [How will success be measured?] 
+*   **Problem:** the user needs a slide deck to support a live presentation
+*   **Goal:** show slides on a big screen
+*   **Target User:** anyone that presents contents
+*   **Key Features:** render a slide, move between slides, enter full-screen
+*   **Non-Goals:** editing the slide deck
+*   **Success Metrics:** works on my machine
