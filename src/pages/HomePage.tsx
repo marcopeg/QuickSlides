@@ -60,32 +60,49 @@ const HomePage: React.FC = () => {
   const handlePreviewClick = useCallback(
     (clickedIndex: number) => {
       const slides = content.split(slideSeparator);
-      let targetCursorPos = 0;
+      let startPos = 0;
+      let endPos = 0;
 
-      // Calculate the end position of the clicked slide's content
-      for (let i = 0; i <= clickedIndex; i++) {
-        // Add length of the current slide content
-        if (slides[i]) {
-          // Check if slide content exists (handles potential trailing separator)
-          targetCursorPos += slides[i].length;
-        }
+      // Calculate start and end position of the clicked slide's content
+      for (let i = 0; i < slides.length; i++) {
+        const slideLength = slides[i] ? slides[i].length : 0;
+        const separatorLength =
+          i < slides.length - 1 ? slideSeparator.length : 0;
 
-        // Add separator length *if* we haven't reached the clicked slide yet
         if (i < clickedIndex) {
-          targetCursorPos += slideSeparator.length;
+          // Before the clicked slide, just add lengths
+          startPos += slideLength + separatorLength;
+        } else if (i === clickedIndex) {
+          // This is the clicked slide
+          endPos = startPos + slideLength;
+          break; // Found the range, no need to continue
+        }
+        // Note: We should not reach here if clickedIndex is valid (0 to slides.length - 1)
+      }
+
+      // Adjust startPos to skip leading newline with optional whitespace
+      const slideContent = slides[clickedIndex];
+      if (slideContent) {
+        const leadingNewlineRegex = /^\n\s*/;
+        const match = slideContent.match(leadingNewlineRegex);
+        if (match && match[0]) {
+          const lengthToSkip = match[0].length;
+          // Ensure we don't skip past the end position
+          if (startPos + lengthToSkip <= endPos) {
+            startPos += lengthToSkip;
+          }
         }
       }
 
-      // Clamp the position to be within the content bounds
-      targetCursorPos = Math.min(targetCursorPos, content.length);
-      targetCursorPos = Math.max(targetCursorPos, 0);
+      // Clamp positions just in case
+      startPos = Math.max(0, startPos);
+      endPos = Math.min(content.length, endPos);
 
       if (textareaRef.current) {
         textareaRef.current.focus();
-        // Set selection and update state
-        textareaRef.current.selectionStart = targetCursorPos;
-        textareaRef.current.selectionEnd = targetCursorPos;
-        setCursorPosition(targetCursorPos);
+        textareaRef.current.setSelectionRange(startPos, endPos);
+        // Update cursor position state to the start of the selection for consistency
+        setCursorPosition(startPos);
       }
     },
     [content]
@@ -104,8 +121,8 @@ const HomePage: React.FC = () => {
     setContent(defaultSlidesContent);
   }, []); // No dependencies needed here
 
-  // Updated function to handle reset button click (with confirmation)
-  const handleReset = () => {
+  // Wrap handleReset in useCallback
+  const handleReset = useCallback(() => {
     if (
       window.confirm(
         "Are you sure you want to reset the content to the default slides? Any changes will be lost."
@@ -113,7 +130,7 @@ const HomePage: React.FC = () => {
     ) {
       resetContent(); // Call the extracted reset logic
     }
-  };
+  }, [resetContent]); // Dependency: resetContent
 
   // useEffect for global keydown listener
   useEffect(() => {
