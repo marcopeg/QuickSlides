@@ -234,7 +234,7 @@ const HomePage: React.FC = () => {
   }, [clearContent]); // Dependency: clearContent
 
   // Helper function to request fullscreen
-  const requestFullscreen = () => {
+  const requestFullscreen = useCallback(() => {
     const element = document.documentElement;
     if (element.requestFullscreen) {
       element.requestFullscreen().catch((err) => {
@@ -242,11 +242,8 @@ const HomePage: React.FC = () => {
           `Error attempting to enable full-screen mode: ${err.message} (${err.name})`
         );
       });
-    } // Add checks for vendor prefixes if needed for older browsers
-    // else if (element.mozRequestFullScreen) { /* Firefox */ element.mozRequestFullScreen(); }
-    // else if (element.webkitRequestFullscreen) { /* Chrome, Safari & Opera */ element.webkitRequestFullscreen(); }
-    // else if (element.msRequestFullscreen) { /* IE/Edge */ element.msRequestFullscreen(); }
-  };
+    }
+  }, []);
 
   // Effect to handle initial focus/selection or focus after navigation back
   useEffect(() => {

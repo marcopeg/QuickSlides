@@ -112,7 +112,10 @@ const SlidesPreview: React.FC<SlidesPreviewProps> = ({
                 {/* Use Fragment to group */}
                 <div
                   // Assign ref to the element
-                  ref={(el) => (slideRefs.current[index] = el)}
+                  ref={(el) => {
+                    slideRefs.current[index] = el;
+                    return undefined;
+                  }}
                   // Add onClick handler
                   onClick={() => onPreviewClick(index)}
                   className={`bg-white shadow-md rounded overflow-hidden relative transition-all duration-150 cursor-pointer ${highlightClass}`}
