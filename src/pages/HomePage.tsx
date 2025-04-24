@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { Play } from "lucide-react";
+import { Play, Download } from "lucide-react";
 import defaultSlidesContent from "@/slides.md?raw"; // Import raw markdown content
 import { Button } from "@/components/ui/button";
 import SlidesPreview from "@/components/SlidesPreview"; // Import the new component
@@ -155,6 +155,39 @@ const HomePage: React.FC = () => {
     },
     [] // Remove content dependency, handlePreviewClick is now stable
   );
+
+  // Function to handle download
+  const handleDownload = useCallback(() => {
+    const defaultName = "QuickSlides";
+    // Use prompt to get filename, confirm doesn't allow text input
+    const filenameInput = window.prompt(
+      "Enter filename for download:",
+      defaultName
+    );
+
+    // Proceed only if user entered a name and didn't cancel
+    if (filenameInput !== null && filenameInput.trim() !== "") {
+      const filename = filenameInput.trim();
+      const blob = new Blob([content], {
+        type: "text/markdown;charset=utf-8;",
+      });
+
+      // Create a temporary link element
+      const link = document.createElement("a");
+      const url = URL.createObjectURL(blob);
+      link.setAttribute("href", url);
+      link.setAttribute("download", `${filename}.md`);
+      link.style.visibility = "hidden";
+
+      // Append to the document, click, and remove
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      // Clean up the blob URL after a short delay
+      setTimeout(() => URL.revokeObjectURL(url), 100);
+    }
+  }, [content]); // Depends on the current content
 
   // Use useCallback to memoize handlePresent for the effect dependency array
   const handlePresent = useCallback(() => {
@@ -368,6 +401,14 @@ const HomePage: React.FC = () => {
           <div className="flex justify-center gap-4">
             <Button onClick={handleReset} className="flex items-center">
               reset
+            </Button>
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={handleDownload}
+              title="Download Markdown"
+            >
+              <Download className="h-4 w-4" />
             </Button>
             <Button
               onClick={handlePresent}
