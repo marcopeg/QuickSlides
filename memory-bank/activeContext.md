@@ -1,7 +1,7 @@
 # Active Context
 
 *   **Current Focus:** Implement specific image rendering logic (full-slide vs inline).
-*   **Recent Changes:** Refined `HomePage` layout (textarea margins, button focus rings, font). Added "Reset" button. Added 'Esc' key listener. Configured path aliasing to support "@/" imports.
+*   **Recent Changes:** Implemented a VSCode-inspired dark theme. Enforced dark mode globally (`main.tsx`), updated Shadcn/ui CSS variables (`index.css`) with a new color palette, removed light theme variables, and corrected Tailwind directives.
 *   **Next Steps:** Implement specific image rendering logic in `SlidePage.tsx` or a custom markdown component.
-*   **Open Questions/Decisions:** Button visibility in dark mode (applied standard contrasting classes, issue might be config if persists). How to handle image rendering rules?
-*   **Blockers:** Missing Shadcn components.
+*   **Open Questions/Decisions:** How to handle image rendering rules? (Button visibility in dark mode should be resolved by the new theme).
+*   **Blockers:** Missing Shadcn components (need verification if still an issue after theme update).

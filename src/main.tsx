@@ -4,6 +4,8 @@ import { BrowserRouter } from 'react-router-dom'
 import '@/index.css'
 import App from '@/App.tsx'
 
+// document.documentElement.classList.add('dark'); - Removed as theme is now globally applied via CSS
+
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <BrowserRouter>
