@@ -15,6 +15,7 @@ const HomePage: React.FC = () => {
   const [cursorPosition, setCursorPosition] = useState<number>(0);
   const [activeSlideIndex, setActiveSlideIndex] = useState<number>(0);
   const textareaRef = useRef<HTMLTextAreaElement>(null); // Ref for the textarea
+  const initialFocusDoneRef = useRef<boolean>(false); // Flag for initial focus
 
   useEffect(() => {
     // Load content from local storage or use default slides
@@ -40,27 +41,61 @@ const HomePage: React.FC = () => {
 
   // Calculate active slide index based on cursor position
   useEffect(() => {
-    let charCount = 0;
+    let currentPosition = 0;
     const slides = content.split(slideSeparator);
-    let currentSlideIndex = 0;
+    // Default to the last slide index, handles edge cases
+    let calculatedIndex = Math.max(0, slides.length - 1);
+
     for (let i = 0; i < slides.length; i++) {
-      charCount += slides[i].length;
-      if (cursorPosition <= charCount) {
-        currentSlideIndex = i;
-        break;
+      const slideContent = slides[i] ?? ""; // Handle potentially undefined slides
+      const endOfSlideContent = currentPosition + slideContent.length;
+
+      // Check if cursor is within or exactly at the end of this slide's content
+      if (
+        cursorPosition >= currentPosition &&
+        cursorPosition <= endOfSlideContent
+      ) {
+        calculatedIndex = i;
+        break; // Found the slide
       }
-      // Add separator length if not the last slide
+
+      // Check if cursor is within the separator area *after* this slide
       if (i < slides.length - 1) {
-        charCount += slideSeparator.length;
+        const startOfSeparator = endOfSlideContent;
+        const endOfSeparator = startOfSeparator + slideSeparator.length;
+        if (
+          cursorPosition > startOfSeparator &&
+          cursorPosition <= endOfSeparator
+        ) {
+          // Cursor is in the separator, associate with the *next* slide
+          calculatedIndex = i + 1;
+          break; // Found the slide
+        }
+        // Move position marker past the separator for the next iteration
+        currentPosition = endOfSeparator;
+      } else {
+        // Last slide, just move position marker past the content
+        currentPosition = endOfSlideContent;
       }
     }
-    setActiveSlideIndex(currentSlideIndex);
+
+    // Only update if the index actually changed
+    setActiveSlideIndex((prevIndex) => {
+      if (prevIndex !== calculatedIndex) {
+        return calculatedIndex;
+      }
+      return prevIndex;
+    });
   }, [content, cursorPosition]);
 
   // Function to handle clicks on slide previews
   const handlePreviewClick = useCallback(
     (clickedIndex: number) => {
-      const slides = content.split(slideSeparator);
+      // Read current content directly from textarea ref
+      const currentContent = textareaRef.current?.value ?? "";
+      if (!textareaRef.current || currentContent === null) return; // Guard if ref not ready or value is null
+
+      const slides = currentContent.split(slideSeparator);
       let startPos = 0;
       let endPos = 0;
 
@@ -71,60 +106,48 @@ const HomePage: React.FC = () => {
           i < slides.length - 1 ? slideSeparator.length : 0;
 
         if (i < clickedIndex) {
-          // Before the clicked slide, just add lengths
           startPos += slideLength + separatorLength;
         } else if (i === clickedIndex) {
-          // This is the clicked slide
           endPos = startPos + slideLength;
-          break; // Found the range, no need to continue
+          break;
         }
-        // Note: We should not reach here if clickedIndex is valid (0 to slides.length - 1)
       }
 
-      // Adjust startPos to skip leading newline with optional whitespace
       const slideContent = slides[clickedIndex];
       if (slideContent) {
         const leadingNewlineRegex = /^\n\s*/;
         const match = slideContent.match(leadingNewlineRegex);
         if (match && match[0]) {
           const lengthToSkip = match[0].length;
-          // Ensure we don't skip past the end position
           if (startPos + lengthToSkip <= endPos) {
             startPos += lengthToSkip;
           }
         }
       }
 
-      // Clamp positions just in case
       startPos = Math.max(0, startPos);
-      endPos = Math.min(content.length, endPos);
+      endPos = Math.min(currentContent.length, endPos);
 
-      if (textareaRef.current) {
-        textareaRef.current.focus();
-        textareaRef.current.setSelectionRange(startPos, endPos);
-        // Update cursor position state to the start of the selection for consistency
-        setCursorPosition(startPos);
+      textareaRef.current.focus();
+      textareaRef.current.setSelectionRange(startPos, endPos);
+      setCursorPosition(startPos);
 
-        // --- Scroll textarea to center selection ---
-        const textarea = textareaRef.current;
-        const midPos = (startPos + endPos) / 2;
-        const estimatedScrollTop =
-          (midPos / content.length) * textarea.scrollHeight;
-        let targetScrollTop = estimatedScrollTop - textarea.clientHeight / 2;
+      const textarea = textareaRef.current;
+      const midPos = (startPos + endPos) / 2;
+      const estimatedScrollTop =
+        (midPos / currentContent.length) * textarea.scrollHeight;
+      let targetScrollTop = estimatedScrollTop - textarea.clientHeight / 2;
 
-        // Clamp scroll position
-        targetScrollTop = Math.max(0, targetScrollTop);
-        targetScrollTop = Math.min(
-          targetScrollTop,
-          textarea.scrollHeight - textarea.clientHeight
-        );
+      targetScrollTop = Math.max(0, targetScrollTop);
+      targetScrollTop = Math.min(
+        targetScrollTop,
+        textarea.scrollHeight - textarea.clientHeight
+      );
 
-        textarea.scrollTop = targetScrollTop;
-        // --- End scroll logic ---
-      }
+      textarea.scrollTop = targetScrollTop;
     },
-    [content]
-  ); // Dependency: content
+    [] // Remove content dependency, handlePreviewClick is now stable
+  );
 
   // Use useCallback to memoize handlePresent for the effect dependency array
   const handlePresent = useCallback(() => {
@@ -165,24 +188,34 @@ const HomePage: React.FC = () => {
     // else if (element.msRequestFullscreen) { /* IE/Edge */ element.msRequestFullscreen(); }
   };
 
-  // Effect to focus and select the appropriate slide on load/navigation
+  // Effect to handle initial focus/selection or focus after navigation back
   useEffect(() => {
-    // Only run if content has been loaded and is not just whitespace
+    // Only run if content is loaded
     if (content && content.trim().length > 0) {
-      // Check location state for the last slide number from presentation mode
-      const lastSlide = location.state?.lastSlide as number | undefined;
-      let initialIndex = 0;
-      if (lastSlide && typeof lastSlide === "number" && lastSlide > 0) {
-        // Adjust for 0-based index and ensure it's within bounds
-        const numSlides = content.split(slideSeparator).length;
-        initialIndex = Math.min(numSlides - 1, lastSlide - 1);
+      // Check if initial focus/selection has already been done for this mount/navigation
+      if (!initialFocusDoneRef.current) {
+        const lastSlide = location.state?.lastSlide as number | undefined;
+        let initialIndex = 0;
+        if (lastSlide && typeof lastSlide === "number" && lastSlide > 0) {
+          const numSlides = content.split(slideSeparator).length;
+          initialIndex = Math.min(numSlides - 1, lastSlide - 1);
+        }
+        handlePreviewClick(initialIndex); // Perform the focus/selection
+        initialFocusDoneRef.current = true; // Mark as done
       }
-
-      // Call handlePreviewClick for the determined initial slide
-      handlePreviewClick(initialIndex);
     }
-    // NOTE: This effect now also depends on location state.
-  }, [content, handlePreviewClick, location.state]); // Depend on content, handler, and location state
+  }, [content, location.state, handlePreviewClick]); // Runs when content loads or location state changes
+
+  // Effect to reset the initial focus flag when navigating back with state
+  useEffect(() => {
+    // If location.state exists (likely from navigating back), allow initial focus logic to run again
+    if (location.state?.lastSlide) {
+      initialFocusDoneRef.current = false;
+    }
+    // We might also want to reset it if the component fully unmounts and remounts,
+    // but for SPA navigation, resetting based on location.state is key.
+    // Resetting content should NOT reset this flag.
+  }, [location.state]);
 
   // useEffect for global keydown listener
   useEffect(() => {
