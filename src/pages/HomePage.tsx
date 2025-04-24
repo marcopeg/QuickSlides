@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { Play, Download } from "lucide-react";
+import { Play, Download, Upload } from "lucide-react";
 import defaultSlidesContent from "@/slides.md?raw"; // Import raw markdown content
 import { Button } from "@/components/ui/button";
 import SlidesPreview from "@/components/SlidesPreview"; // Import the new component
@@ -188,6 +188,18 @@ const HomePage: React.FC = () => {
       setTimeout(() => URL.revokeObjectURL(url), 100);
     }
   }, [content]); // Depends on the current content
+
+  // Function to handle import
+  const handleImport = useCallback(() => {
+    // TODO: Implement file import logic
+    // - Create an <input type="file"> element
+    // - Trigger its click event
+    // - Add an event listener for 'change'
+    // - Read the selected file content
+    // - Update the 'content' state
+    // - Update local storage
+    console.log("Import button clicked - implement logic here");
+  }, []); // Dependencies will be added when logic is implemented
 
   // Use useCallback to memoize handlePresent for the effect dependency array
   const handlePresent = useCallback(() => {
@@ -398,24 +410,39 @@ const HomePage: React.FC = () => {
             />
           </div>
 
-          <div className="flex justify-center gap-4">
-            <Button onClick={handleReset} className="flex items-center">
-              reset
-            </Button>
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={handleDownload}
-              title="Download Markdown"
-            >
-              <Download className="h-4 w-4" />
-            </Button>
-            <Button
-              onClick={handlePresent}
-              className="flex items-center bg-orange-500 hover:bg-orange-600 text-white"
-            >
-              Present <Play className="ml-2 h-4 w-4" />
-            </Button>
+          <div className="flex justify-between items-center gap-4">
+            <div className="flex gap-4">
+              <Button
+                variant="outline"
+                onClick={handleDownload}
+                title="Download Markdown"
+                className="flex items-center"
+              >
+                <Download className="mr-2 h-4 w-4" />
+                Export
+              </Button>
+              <Button
+                variant="outline"
+                onClick={handleImport}
+                title="Import Markdown"
+                className="flex items-center"
+              >
+                <Upload className="mr-2 h-4 w-4" />
+                Import
+              </Button>
+            </div>
+
+            <div className="flex gap-4">
+              <Button onClick={handleReset} className="flex items-center">
+                reset
+              </Button>
+              <Button
+                onClick={handlePresent}
+                className="flex items-center bg-orange-500 hover:bg-orange-600 text-white"
+              >
+                Present <Play className="ml-2 h-4 w-4" />
+              </Button>
+            </div>
           </div>
         </div>
       </div>
