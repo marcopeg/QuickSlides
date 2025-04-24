@@ -83,55 +83,67 @@ const SlidesPreview: React.FC<SlidesPreviewProps> = ({
       ref={scrollContainerRef} // Ref for the scrollable container
       className={`overflow-y-auto h-full bg-gray-200 p-4 rounded ${className}`}
     >
-      <div className="space-y-2">
-        {" "}
-        {/* Adjust spacing slightly */}
-        {/* Button to add slide at the beginning */}
-        <AddSlideButton onClick={() => onAddSlide(0)} />
-        {slides.map((slideContent, index) => {
-          // Conditionally apply highlight class
-          const isActive = index === activeSlideIndex;
-          const highlightClass = isActive
-            ? "ring-2 ring-blue-500 ring-offset-2"
-            : "";
+      {content.trim() === "" ? (
+        // If content is empty, show a single button to create the first slide
+        <button
+          onClick={() => onAddSlide(0)}
+          className="w-full flex justify-center items-center py-2 px-4 text-gray-500 bg-gray-100 hover:bg-gray-300 hover:text-blue-600 rounded transition-colors duration-150 border border-dashed border-gray-400"
+          title="Create the first slide"
+        >
+          <Plus size={18} className="mr-2" /> Create new slide
+        </button>
+      ) : (
+        // Otherwise, show the list of previews and add buttons
+        <div className="space-y-2">
+          {" "}
+          {/* Adjust spacing slightly */}
+          {/* Button to add slide at the beginning */}
+          <AddSlideButton onClick={() => onAddSlide(0)} />
+          {slides.map((slideContent, index) => {
+            // Conditionally apply highlight class
+            const isActive = index === activeSlideIndex;
+            const highlightClass = isActive
+              ? "ring-2 ring-blue-500 ring-offset-2"
+              : "";
 
-          return (
-            <React.Fragment key={index}>
-              {" "}
-              {/* Use Fragment to group */}
-              <div
-                // Assign ref to the element
-                ref={(el) => (slideRefs.current[index] = el)}
-                // Add onClick handler
-                onClick={() => onPreviewClick(index)}
-                className={`bg-white shadow-md rounded overflow-hidden relative transition-all duration-150 cursor-pointer ${highlightClass}`}
-                style={{
-                  aspectRatio: windowAspectRatio,
-                }}
-              >
-                {/* New inner wrapper for scaling */}
+            return (
+              <React.Fragment key={index}>
+                {" "}
+                {/* Use Fragment to group */}
                 <div
+                  // Assign ref to the element
+                  ref={(el) => (slideRefs.current[index] = el)}
+                  // Add onClick handler
+                  onClick={() => onPreviewClick(index)}
+                  className={`bg-white shadow-md rounded overflow-hidden relative transition-all duration-150 cursor-pointer ${highlightClass}`}
                   style={{
-                    position: "absolute",
-                    top: 0,
-                    left: 0,
-                    width: `${100 / previewScale}%`, // Make it 1/scale larger
-                    height: `${100 / previewScale}%`, // Make it 1/scale larger
-                    transform: `scale(${previewScale})`, // Scale it down
-                    transformOrigin: "top left",
+                    aspectRatio: windowAspectRatio,
                   }}
-                  className="overflow-hidden" // Clip content to scaled bounds
                 >
-                  {/* Slide fills the oversized wrapper before scaling */}
-                  <Slide content={slideContent} />
+                  {/* New inner wrapper for scaling */}
+                  <div
+                    style={{
+                      position: "absolute",
+                      top: 0,
+                      left: 0,
+                      width: `${100 / previewScale}%`, // Make it 1/scale larger
+                      height: `${100 / previewScale}%`, // Make it 1/scale larger
+                      transform: `scale(${previewScale})`, // Scale it down
+                      transformOrigin: "top left",
+                    }}
+                    className="overflow-hidden" // Clip content to scaled bounds
+                  >
+                    {/* Slide fills the oversized wrapper before scaling */}
+                    <Slide content={slideContent} />
+                  </div>
                 </div>
-              </div>
-              {/* Button to add slide after the current one */}
-              <AddSlideButton onClick={() => onAddSlide(index + 1)} />
-            </React.Fragment>
-          );
-        })}
-      </div>
+                {/* Button to add slide after the current one */}
+                <AddSlideButton onClick={() => onAddSlide(index + 1)} />
+              </React.Fragment>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 };
