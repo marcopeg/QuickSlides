@@ -1,10 +1,10 @@
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
-
 // No longer needs hooks or routing logic
 // import { useEffect } from 'react';
 // import { useParams, useNavigate } from 'react-router-dom';
 // import { useSlides } from '../hooks/useSlides';
+
+// Import the new Slide component
+import Slide from "@/components/Slide";
 
 interface SlidePageProps {
   content: string; // Expect markdown content as a prop
@@ -37,17 +37,13 @@ const SlidePage: React.FC<SlidePageProps> = ({ content }) => {
   // // Adjust for 0-based index
   // const currentSlideContent = slides[slideNumber - 1];
 
-  // Render the passed markdown content
+  // Render using the new Slide component
   return (
-    <div className="slide-container w-full h-full flex items-center justify-center p-8">
-      {/* Apply prose for markdown styling */}
-      <div className="prose prose-invert max-w-none">
-        <ReactMarkdown remarkPlugins={[remarkGfm]}>
-          {String(content || '')} 
-        </ReactMarkdown>
-      </div>
+    // Container is simplified, layout handled by Slide component
+    <div className="slide-page-container w-full h-full">
+      <Slide content={content} />
     </div>
   );
 };
 
-export default SlidePage; 
+export default SlidePage;
