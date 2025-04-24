@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Play } from "lucide-react";
 import defaultSlidesContent from "@/slides.md?raw"; // Import raw markdown content
 import { Button } from "@/components/ui/button";
+import SlidesPreview from "@/components/SlidesPreview"; // Import the new component
 
 const LOCAL_STORAGE_KEY = "quickslides-content";
 
@@ -76,14 +77,17 @@ const HomePage: React.FC = () => {
       <h1 className="text-3xl font-bold text-center mb-6">QuickSlides</h1>
       <div className="w-full max-w-4xl mx-auto bg-white rounded-lg shadow-lg overflow-hidden h-[85vh]">
         <div className="p-6 flex flex-col h-full">
-          <textarea
-            value={content}
-            onChange={handleContentChange}
-            placeholder="Enter your slides here, separated by '---'"
-            className="w-full flex-grow p-4 border border-gray-300 rounded-md bg-gray-50 resize-none font-mono text-sm mb-4"
-          />
+          <div className="flex flex-row flex-grow gap-4 mb-4 overflow-hidden">
+            <textarea
+              value={content}
+              onChange={handleContentChange}
+              placeholder="Enter your slides here, separated by '---'"
+              className="w-2/3 h-full p-4 border border-gray-300 rounded-md bg-gray-50 resize-none font-mono text-sm"
+            />
+            <SlidesPreview content={content} className="w-1/3 h-full" />
+          </div>
 
-          <div className="flex justify-center gap-4 mt-4">
+          <div className="flex justify-center gap-4">
             <Button onClick={handleReset} className="flex items-center">
               reset
             </Button>

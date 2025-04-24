@@ -1,0 +1,82 @@
+import React, { useState, useEffect } from "react";
+import Slide from "./Slide"; // Corrected import path
+
+interface SlidesPreviewProps {
+  content: string;
+  className?: string;
+}
+
+const slideSeparator = "\n---\n"; // Define the separator
+
+const SlidesPreview: React.FC<SlidesPreviewProps> = ({
+  content,
+  className = "",
+}) => {
+  const [windowSize, setWindowSize] = useState({ width: 0, height: 0 });
+
+  useEffect(() => {
+    const handleResize = () => {
+      setWindowSize({
+        width: window.innerWidth,
+        height: window.innerHeight,
+      });
+    };
+
+    // Set initial size
+    handleResize();
+
+    // Add event listener
+    window.addEventListener("resize", handleResize);
+
+    // Clean up event listener on component unmount
+    return () => window.removeEventListener("resize", handleResize);
+  }, []); // Empty dependency array ensures this runs only on mount and unmount
+
+  const slides = content.split(slideSeparator);
+  const previewScale = 0.2; // Adjust scale factor as needed
+
+  // Calculate aspect ratio, handle division by zero
+  const windowAspectRatio =
+    windowSize.height > 0 ? windowSize.width / windowSize.height : 16 / 9; // Default aspect ratio
+
+  return (
+    <div
+      className={`overflow-y-auto h-full bg-gray-200 p-4 rounded ${className}`}
+    >
+      <div className="space-y-4">
+        {slides.map((slideContent, index) => (
+          <div
+            key={index}
+            // Aspect ratio container - unscaled, defines the space.
+            // Added relative positioning for the absolute child.
+            className="bg-white shadow-md rounded overflow-hidden relative"
+            style={{
+              aspectRatio: windowAspectRatio,
+              // transform: `scale(${previewScale})`, // SCALING MOVED INSIDE
+              // transformOrigin: "top left",
+            }}
+          >
+            {/* New inner wrapper for scaling */}
+            <div
+              style={{
+                position: "absolute",
+                top: 0,
+                left: 0,
+                width: `${100 / previewScale}%`, // Make it 1/scale larger
+                height: `${100 / previewScale}%`, // Make it 1/scale larger
+                transform: `scale(${previewScale})`, // Scale it down
+                transformOrigin: "top left",
+              }}
+              className="overflow-hidden" // Clip content to scaled bounds
+            >
+              {/* Slide fills the oversized wrapper before scaling */}
+              <Slide content={slideContent} />
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+export default SlidesPreview;
