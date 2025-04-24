@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { Play, RotateCcw } from "lucide-react";
+import { Play } from "lucide-react";
 import defaultSlidesContent from "@/slides.md?raw"; // Import raw markdown content
 import { Button } from "@/components/ui/button";
 
@@ -37,6 +37,17 @@ const HomePage: React.FC = () => {
     setContent(defaultSlidesContent);
   }, []); // No dependencies needed here
 
+  // Updated function to handle reset button click (with confirmation)
+  const handleReset = () => {
+    if (
+      window.confirm(
+        "Are you sure you want to reset the content to the default slides? Any changes will be lost."
+      )
+    ) {
+      resetContent(); // Call the extracted reset logic
+    }
+  };
+
   // useEffect for global keydown listener
   useEffect(() => {
     const handleGlobalKeyDown = (event: KeyboardEvent) => {
@@ -48,7 +59,7 @@ const HomePage: React.FC = () => {
       // Handle Escape globally
       else if (event.key === "Escape") {
         event.preventDefault(); // Prevent potential default browser actions for Escape
-        resetContent(); // Reset content directly without confirmation
+        handleReset(); // Call handleReset to include confirmation
       }
     };
 
@@ -58,18 +69,7 @@ const HomePage: React.FC = () => {
     return () => {
       window.removeEventListener("keydown", handleGlobalKeyDown);
     };
-  }, [handlePresent, resetContent]); // Add memoized functions as dependencies
-
-  // Updated function to handle reset button click (with confirmation)
-  const handleReset = () => {
-    if (
-      window.confirm(
-        "Are you sure you want to reset the content to the default slides? Any changes will be lost."
-      )
-    ) {
-      resetContent(); // Call the extracted reset logic
-    }
-  };
+  }, [handlePresent, handleReset]); // Add memoized functions as dependencies
 
   return (
     <div className="h-screen w-full bg-gray-100 p-4 flex items-center justify-center">
@@ -86,11 +86,11 @@ const HomePage: React.FC = () => {
 
           <div className="flex justify-center gap-4 mt-4">
             <Button onClick={handleReset} className="flex items-center">
-              <RotateCcw className="mr-2 h-4 w-4" /> Reset
+              reset
             </Button>
             <Button
               onClick={handlePresent}
-              className="flex items-center bg-orange-500 hover:bg-orange-600"
+              className="flex items-center bg-orange-500 hover:bg-orange-600 text-white"
             >
               Present <Play className="ml-2 h-4 w-4" />
             </Button>
