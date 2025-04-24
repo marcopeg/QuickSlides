@@ -11,6 +11,7 @@ const slideSeparator = "\n---\n"; // Make sure this matches SlidesPreview
 
 const HomePage: React.FC = () => {
   const [content, setContent] = useState<string>("");
+  const [isDraggingOver, setIsDraggingOver] = useState<boolean>(false); // State for drag overlay
   const navigate = useNavigate();
   const location = useLocation(); // Get location object
   const [cursorPosition, setCursorPosition] = useState<number>(0);
@@ -191,15 +192,23 @@ const HomePage: React.FC = () => {
 
   // Function to handle import
   const handleImport = useCallback(() => {
-    // TODO: Implement file import logic
-    // - Create an <input type="file"> element
-    // - Trigger its click event
-    // - Add an event listener for 'change'
-    // - Read the selected file content
-    // - Update the 'content' state
-    // - Update local storage
     console.log("Import button clicked - implement logic here");
   }, []); // Dependencies will be added when logic is implemented
+
+  // Shared function to process imported content
+  const processImportedContent = useCallback(
+    (newContent: string) => {
+      setContent(newContent);
+      localStorage.setItem(LOCAL_STORAGE_KEY, newContent);
+      // Optionally, reset cursor or focus after import
+      if (textareaRef.current) {
+        textareaRef.current.focus();
+        setCursorPosition(0); // Move cursor to start
+        handlePreviewClick(0); // Focus first slide preview
+      }
+    },
+    [handlePreviewClick]
+  ); // Added handlePreviewClick dependency
 
   // Use useCallback to memoize handlePresent for the effect dependency array
   const handlePresent = useCallback(() => {
@@ -385,8 +394,114 @@ const HomePage: React.FC = () => {
     };
   }, [slides, activeSlideIndex]); // Depend on slides array and active index
 
+  // --- Drag and Drop Handlers ---
+
+  const handleDragEnter = useCallback(
+    (event: React.DragEvent<HTMLDivElement>) => {
+      event.preventDefault();
+      event.stopPropagation();
+      // Check if dragged items contain files
+      if (
+        event.dataTransfer.types &&
+        event.dataTransfer.types.includes("Files")
+      ) {
+        setIsDraggingOver(true);
+      }
+    },
+    []
+  );
+
+  const handleDragOver = useCallback(
+    (event: React.DragEvent<HTMLDivElement>) => {
+      event.preventDefault();
+      event.stopPropagation();
+      // Ensure the drag state remains true while over the target
+      if (
+        !isDraggingOver &&
+        event.dataTransfer.types &&
+        event.dataTransfer.types.includes("Files")
+      ) {
+        setIsDraggingOver(true);
+      }
+    },
+    [isDraggingOver]
+  ); // Depend on isDraggingOver to avoid unnecessary calls
+
+  const handleDragLeave = useCallback(
+    (event: React.DragEvent<HTMLDivElement>) => {
+      event.preventDefault();
+      event.stopPropagation();
+      // Check if the leave event target is the main container itself or if it goes outside the window
+      // This prevents flickering when dragging over child elements.
+      const relatedTarget = event.relatedTarget as Node | null;
+      if (!event.currentTarget.contains(relatedTarget)) {
+        setIsDraggingOver(false);
+      }
+    },
+    []
+  );
+
+  const handleDrop = useCallback(
+    (event: React.DragEvent<HTMLDivElement>) => {
+      event.preventDefault();
+      event.stopPropagation();
+      setIsDraggingOver(false);
+
+      const files = event.dataTransfer.files;
+
+      if (files && files.length === 1) {
+        const file = files[0];
+        // Basic check for markdown file types
+        if (
+          file.type === "text/markdown" ||
+          file.name.endsWith(".md") ||
+          file.name.endsWith(".markdown")
+        ) {
+          const reader = new FileReader();
+          reader.onload = (loadEvent) => {
+            const fileContent = loadEvent.target?.result;
+            if (typeof fileContent === "string") {
+              processImportedContent(fileContent);
+            } else {
+              window.alert("Error: Could not read file content.");
+            }
+          };
+          reader.onerror = () => {
+            window.alert(`Error: Failed to read file "${file.name}".`);
+          };
+          reader.readAsText(file);
+        } else {
+          window.alert(
+            "Error: Please drop a single Markdown file (.md or .markdown)."
+          );
+        }
+      } else if (files && files.length > 1) {
+        window.alert("Error: Please drop only one file at a time.");
+      } else {
+        // Handle cases where something else was dropped (e.g., text)
+        console.log("Dropped item was not a file or files list is empty.");
+      }
+    },
+    [processImportedContent] // Depend on the processing function
+  );
+
   return (
-    <div className="h-screen w-full bg-gray-100 p-4 flex flex-col items-center justify-center">
+    <div
+      className="h-screen w-full bg-gray-100 p-4 flex flex-col items-center justify-center relative" // Added relative positioning
+      onDragEnter={handleDragEnter}
+      onDragOver={handleDragOver} // Keep over state active
+      onDragLeave={handleDragLeave}
+      onDrop={handleDrop}
+    >
+      {/* Drop Zone Overlay */}
+      {isDraggingOver && (
+        <div className="absolute inset-0 bg-blue-500 bg-opacity-25 flex items-center justify-center z-50 pointer-events-none">
+          <p className="text-white text-2xl font-bold">
+            Drop Markdown file to import
+          </p>
+        </div>
+      )}
+
       <h1 className="text-3xl font-bold text-center mb-6">QuickSlides</h1>
       <div className="w-full max-w-4xl mx-auto bg-white rounded-lg shadow-lg overflow-hidden h-[85vh]">
         <div className="p-6 flex flex-col h-full">
