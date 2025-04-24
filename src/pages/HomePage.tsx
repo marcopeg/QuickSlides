@@ -485,6 +485,36 @@ const HomePage: React.FC = () => {
     [processImportedContent] // Depend on the processing function
   );
 
+  // Function to handle adding a new slide
+  const handleAddSlide = useCallback(
+    (index: number) => {
+      const newSlideContent = "# new slide";
+      const slides = content.split(slideSeparator);
+
+      // Insert the new slide content at the specified index
+      slides.splice(index, 0, newSlideContent);
+
+      const newContent = slides.join(slideSeparator);
+
+      // Update state and local storage
+      setContent(newContent);
+      localStorage.setItem(LOCAL_STORAGE_KEY, newContent);
+
+      // Need to wait for the state update to reflect in the DOM
+      // before calculating the new cursor position and focusing.
+      // Use a timeout or requestAnimationFrame for better reliability,
+      // or trigger handlePreviewClick in a subsequent effect.
+      // For simplicity here, we'll call it directly, but be aware of potential timing issues.
+      requestAnimationFrame(() => {
+        // Ensure textarea ref is available
+        if (textareaRef.current) {
+          handlePreviewClick(index); // Focus the newly added slide
+        }
+      });
+    },
+    [content, handlePreviewClick] // Dependencies: content and handlePreviewClick
+  );
+
   return (
     <div
       className="h-screen w-full bg-gray-100 p-4 flex flex-col items-center justify-center relative" // Added relative positioning
@@ -521,6 +551,7 @@ const HomePage: React.FC = () => {
               content={content}
               activeSlideIndex={activeSlideIndex}
               onPreviewClick={handlePreviewClick} // Pass the handler down
+              onAddSlide={handleAddSlide} // Pass the new handler
               className="w-1/3 h-full"
             />
           </div>
