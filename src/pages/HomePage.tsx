@@ -103,6 +103,23 @@ const HomePage: React.FC = () => {
         textareaRef.current.setSelectionRange(startPos, endPos);
         // Update cursor position state to the start of the selection for consistency
         setCursorPosition(startPos);
+
+        // --- Scroll textarea to center selection ---
+        const textarea = textareaRef.current;
+        const midPos = (startPos + endPos) / 2;
+        const estimatedScrollTop =
+          (midPos / content.length) * textarea.scrollHeight;
+        let targetScrollTop = estimatedScrollTop - textarea.clientHeight / 2;
+
+        // Clamp scroll position
+        targetScrollTop = Math.max(0, targetScrollTop);
+        targetScrollTop = Math.min(
+          targetScrollTop,
+          textarea.scrollHeight - textarea.clientHeight
+        );
+
+        textarea.scrollTop = targetScrollTop;
+        // --- End scroll logic ---
       }
     },
     [content]
@@ -131,6 +148,18 @@ const HomePage: React.FC = () => {
       resetContent(); // Call the extracted reset logic
     }
   }, [resetContent]); // Dependency: resetContent
+
+  // Effect to focus and select the first slide on initial load
+  useEffect(() => {
+    // Only run if content has been loaded and is not just whitespace
+    if (content && content.trim().length > 0) {
+      // Simply call handlePreviewClick for the first slide
+      handlePreviewClick(0);
+    }
+    // NOTE: This effect will run whenever 'content' or 'handlePreviewClick' changes.
+    // 'handlePreviewClick' changes only when 'content' changes due to its dependency.
+    // So, this effectively runs when the content is set initially or significantly changed (like on reset).
+  }, [content, handlePreviewClick]); // Depend on content and the handler
 
   // useEffect for global keydown listener
   useEffect(() => {
