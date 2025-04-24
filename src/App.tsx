@@ -10,7 +10,6 @@ import { useSlides } from './hooks/useSlides'
 import Carousel from './components/Carousel'
 import SlidePage from './pages/SlidePage'
 import HomePage from './pages/HomePage'
-import './App.css'
 
 // Component to handle fetching slide number and rendering Carousel
 const SlidesViewer = () => {

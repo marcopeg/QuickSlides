@@ -37,11 +37,11 @@ const HomePage: React.FC = () => {
 
   return (
     <div className="h-screen w-full bg-gray-100 p-4 flex items-center justify-center">
-      <div className="w-full max-w-4xl bg-white rounded-lg shadow-lg overflow-hidden">
+      <div className="w-full max-w-4xl mx-auto bg-white rounded-lg shadow-lg overflow-hidden">
         <div className="p-6">
-          <h1 className="text-3xl font-bold text-center mb-6">QuickSlides</h1>
+          <h1 className="text-3xl font-bold text-center !mb-6" style={{marginBottom: '1.5rem'}}>QuickSlides</h1>
           
-          <div className="mb-6 mx-8">
+          <div className="!my-6 !mx-8" style={{margin: '1.5rem 2rem'}}>
             <textarea
               value={content}
               onChange={handleContentChange}
@@ -50,7 +50,7 @@ const HomePage: React.FC = () => {
             />
           </div>
           
-          <div className="flex justify-center gap-4">
+          <div className="flex justify-center gap-4 !mt-6" style={{marginTop: '1.5rem'}}>
             <button
               onClick={handleReset}
               className="px-4 py-2 bg-white border border-gray-300 rounded-md text-gray-700 flex items-center hover:bg-gray-50"
