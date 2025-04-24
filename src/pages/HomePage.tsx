@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Play } from "lucide-react";
 import defaultSlidesContent from "@/slides.md?raw"; // Import raw markdown content
@@ -13,6 +13,7 @@ const HomePage: React.FC = () => {
   const navigate = useNavigate();
   const [cursorPosition, setCursorPosition] = useState<number>(0);
   const [activeSlideIndex, setActiveSlideIndex] = useState<number>(0);
+  const textareaRef = useRef<HTMLTextAreaElement>(null); // Ref for the textarea
 
   useEffect(() => {
     // Load content from local storage or use default slides
@@ -54,6 +55,41 @@ const HomePage: React.FC = () => {
     }
     setActiveSlideIndex(currentSlideIndex);
   }, [content, cursorPosition]);
+
+  // Function to handle clicks on slide previews
+  const handlePreviewClick = useCallback(
+    (clickedIndex: number) => {
+      const slides = content.split(slideSeparator);
+      let targetCursorPos = 0;
+
+      // Calculate the end position of the clicked slide's content
+      for (let i = 0; i <= clickedIndex; i++) {
+        // Add length of the current slide content
+        if (slides[i]) {
+          // Check if slide content exists (handles potential trailing separator)
+          targetCursorPos += slides[i].length;
+        }
+
+        // Add separator length *if* we haven't reached the clicked slide yet
+        if (i < clickedIndex) {
+          targetCursorPos += slideSeparator.length;
+        }
+      }
+
+      // Clamp the position to be within the content bounds
+      targetCursorPos = Math.min(targetCursorPos, content.length);
+      targetCursorPos = Math.max(targetCursorPos, 0);
+
+      if (textareaRef.current) {
+        textareaRef.current.focus();
+        // Set selection and update state
+        textareaRef.current.selectionStart = targetCursorPos;
+        textareaRef.current.selectionEnd = targetCursorPos;
+        setCursorPosition(targetCursorPos);
+      }
+    },
+    [content]
+  ); // Dependency: content
 
   // Use useCallback to memoize handlePresent for the effect dependency array
   const handlePresent = useCallback(() => {
@@ -109,6 +145,7 @@ const HomePage: React.FC = () => {
         <div className="p-6 flex flex-col h-full">
           <div className="flex flex-row flex-grow gap-4 mb-4 overflow-hidden">
             <textarea
+              ref={textareaRef} // Attach the ref
               value={content}
               onChange={handleContentChange}
               // Track cursor changes
@@ -118,10 +155,10 @@ const HomePage: React.FC = () => {
               placeholder="Enter your slides here, separated by '---'"
               className="w-2/3 h-full p-4 border border-gray-300 rounded-md bg-gray-50 resize-none font-mono text-sm"
             />
-            {/* Pass activeSlideIndex to SlidesPreview */}
             <SlidesPreview
               content={content}
               activeSlideIndex={activeSlideIndex}
+              onPreviewClick={handlePreviewClick} // Pass the handler down
               className="w-1/3 h-full"
             />
           </div>

@@ -4,6 +4,7 @@ import Slide from "./Slide"; // Corrected import path
 interface SlidesPreviewProps {
   content: string;
   activeSlideIndex: number;
+  onPreviewClick: (index: number) => void;
   className?: string;
 }
 
@@ -12,6 +13,7 @@ const slideSeparator = "\n---\n"; // Define the separator
 const SlidesPreview: React.FC<SlidesPreviewProps> = ({
   content,
   activeSlideIndex,
+  onPreviewClick,
   className = "",
 }) => {
   const [windowSize, setWindowSize] = useState({ width: 0, height: 0 });
@@ -77,8 +79,9 @@ const SlidesPreview: React.FC<SlidesPreviewProps> = ({
               key={index}
               // Assign ref to the element
               ref={(el) => (slideRefs.current[index] = el)}
-              // Aspect ratio container - unscaled, defines the space.
-              className={`bg-white shadow-md rounded overflow-hidden relative transition-all duration-150 ${highlightClass}`}
+              // Add onClick handler
+              onClick={() => onPreviewClick(index)}
+              className={`bg-white shadow-md rounded overflow-hidden relative transition-all duration-150 cursor-pointer ${highlightClass}`}
               style={{
                 aspectRatio: windowAspectRatio,
               }}
