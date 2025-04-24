@@ -24,7 +24,14 @@ const MarkdownSlide: React.FC<MarkdownSlideProps> = ({ content }) => {
                    [&_li]:mb-2 
                    [&_a]:text-blue-400 [&_a]:underline hover:[&_a]:text-blue-300"
       >
-        <ReactMarkdown remarkPlugins={[remarkGfm]}>
+        <ReactMarkdown
+          remarkPlugins={[remarkGfm]}
+          components={{
+            a: ({ ...props }) => (
+              <a {...props} target="_blank" rel="noopener noreferrer" />
+            ),
+          }}
+        >
           {String(content || "")}
         </ReactMarkdown>
       </div>

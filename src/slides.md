@@ -1,15 +1,17 @@
-# A New Presentation
+# QuickSlides
+
+for moments that really matter
 
 ---
 
-## A new title
+Your slides, as [Markdown](https://www.markdownguide.org) annotations
 
 ---
 
-A long time ago in a galaxy far,  
-far away....
+# Full-Screen Images
 
-dwedew
+If you put one single image in a slide,  
+it will render as a cover for such slide:
 
 ---
 
@@ -17,19 +19,29 @@ dwedew
 
 ---
 
-## Core Planets
+# Inline Images
 
-- Tatooine
-- Hoth
-- Endor
+Otherwise, just put your images in the Markdown  
+as you would do in any other content:
 
 ---
 
 Use the Force!
 
-![Lightsabers](/images/light-saber.png) 
+![Lightsabers](/images/light-saber.png)
+
+---
+
+# Mixed Images
+
+Try to put only 2 images in the slide to get  
+a cool **split effect**:
 
 ---
 
 ![Millennium Falcon](/images/millennium-falcon.png)
-![Lightsabers](/images/light-saber.png) 
+![Lightsabers](/images/light-saber.png)
+
+---
+
+The End
