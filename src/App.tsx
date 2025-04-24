@@ -96,18 +96,16 @@ function App() {
   }, [location, navigate, totalSlides])
 
   return (
-    <div className="App w-screen h-screen">
-      <Routes>
-        {/* Route for the new homepage */}
-        <Route path="/" element={<HomePage />} />
+    <Routes>
+      {/* Route for the new homepage */}
+      <Route path="/" element={<HomePage />} />
 
-        {/* Route for individual slides */}
-        <Route path="/slide/:slideNumber" element={<SlidesViewer />} />
+      {/* Route for individual slides */}
+      <Route path="/slide/:slideNumber" element={<SlidesViewer />} />
 
-        {/* Optional: Add a 404 handler later */}
-        {/* <Route path="*" element={<div>Not Found</div>} /> */}
-      </Routes>
-    </div>
+      {/* Optional: Add a 404 handler later */}
+      {/* <Route path="*" element={<div>Not Found</div>} /> */}
+    </Routes>
   )
 }
 
