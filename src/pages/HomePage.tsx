@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Play, RotateCcw } from 'lucide-react';
 import defaultSlidesContent from '../slides.md?raw'; // Import raw markdown content
+import { Button } from '../components/ui/button';
 
 const LOCAL_STORAGE_KEY = 'quickslides-content';
 
@@ -51,18 +52,18 @@ const HomePage: React.FC = () => {
           </div>
           
           <div className="flex justify-center gap-4 !mt-6" style={{marginTop: '1.5rem'}}>
-            <button
+            <Button 
               onClick={handleReset}
-              className="px-4 py-2 bg-white border border-gray-300 rounded-md text-gray-700 flex items-center hover:bg-gray-50"
+              className="flex items-center"
             >
               <RotateCcw className="mr-2 h-4 w-4" /> Reset
-            </button>
-            <button
+            </Button>
+            <Button 
               onClick={handlePresent}
-              className="px-4 py-2 bg-orange-500 text-white rounded-md flex items-center hover:bg-orange-600"
+              className="flex items-center bg-orange-500 hover:bg-orange-600"
             >
-              <Play className="mr-2 h-4 w-4" /> Present
-            </button>
+              Present <Play className="ml-2 h-4 w-4" />
+            </Button>
           </div>
         </div>
       </div>
