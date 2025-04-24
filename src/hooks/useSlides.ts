@@ -1,9 +1,9 @@
-import { useMemo, useState, useEffect } from 'react';
+import { useMemo, useState, useEffect } from "react";
 // Import raw markdown content using Vite's ?raw suffix
 // The `@` alias should resolve to the `src` directory based on tsconfig.json
-import defaultSlideContent from '@/slides.md?raw'; // Now using proper path alias
+import defaultSlideContent from "@/slides.md?raw"; // Now using proper path alias
 
-const LOCAL_STORAGE_KEY = 'quickslides-content';
+const LOCAL_STORAGE_KEY = "quickslides-content";
 
 /**
  * Custom hook to parse slide markdown content into an array of slides.
@@ -25,11 +25,10 @@ export function useSlides(): string[] {
         setRawContent(event.newValue ?? defaultSlideContent);
       }
     };
-    window.addEventListener('storage', handleStorageChange);
+    window.addEventListener("storage", handleStorageChange);
     return () => {
-      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener("storage", handleStorageChange);
     };
-
   }, []); // Runs once on mount
 
   const slides = useMemo(() => {
@@ -38,12 +37,11 @@ export function useSlides(): string[] {
       return [];
     }
     // Split by '---' separator on its own line, potentially surrounded by newlines
-    // Trim whitespace from each slide and filter out any empty slides
+    // Trim whitespace from each slide and filter out any truly empty slides
     return rawContent
       .split(/\r?\n---\r?\n/)
-      .map(slide => slide.trim())
-      .filter(slide => slide.length > 0);
+      .filter((slide) => slide.trim().length > 0);
   }, [rawContent]); // Re-parse only when rawContent changes
 
   return slides;
-} 
+}

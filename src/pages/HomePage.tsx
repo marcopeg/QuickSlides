@@ -4,6 +4,7 @@ import { Play } from "lucide-react";
 import defaultSlidesContent from "@/slides.md?raw"; // Import raw markdown content
 import { Button } from "@/components/ui/button";
 import SlidesPreview from "@/components/SlidesPreview"; // Import the new component
+import { useSlides } from "@/hooks/useSlides"; // Import useSlides
 
 const LOCAL_STORAGE_KEY = "quickslides-content";
 const slideSeparator = "\n---\n"; // Make sure this matches SlidesPreview
@@ -16,6 +17,7 @@ const HomePage: React.FC = () => {
   const [activeSlideIndex, setActiveSlideIndex] = useState<number>(0);
   const textareaRef = useRef<HTMLTextAreaElement>(null); // Ref for the textarea
   const initialFocusDoneRef = useRef<boolean>(false); // Flag for initial focus
+  const slides = useSlides(); // Use the hook to get processed slides
 
   useEffect(() => {
     // Load content from local storage or use default slides
@@ -287,6 +289,56 @@ const HomePage: React.FC = () => {
     requestFullscreen,
     navigate,
   ]); // Updated dependencies
+
+  // Effect to update document title based on active slide
+  useEffect(() => {
+    let title = "QuickSlides Editor";
+    const imageOnlyRegex = /^\s*!\[(.*?)\]\(.+\)\s*$/; // Check if ONLY an image
+    const firstImageRegex = /^\s*!\[(.*?)\]\(.+\)/; // Check if starts with an image
+
+    if (
+      slides &&
+      slides.length > activeSlideIndex &&
+      slides[activeSlideIndex]
+    ) {
+      const activeSlideContent = slides[activeSlideIndex];
+      const imageOnlyMatch = activeSlideContent.match(imageOnlyRegex);
+      const firstImageMatch = activeSlideContent.match(firstImageRegex);
+
+      let potentialTitle = "";
+
+      if (imageOnlyMatch && imageOnlyMatch[1]) {
+        // Case 1: Slide contains ONLY an image
+        potentialTitle = imageOnlyMatch[1].trim();
+      } else if (firstImageMatch && firstImageMatch[1]) {
+        // Case 2: Slide STARTS with an image (but might have more content)
+        potentialTitle = firstImageMatch[1].trim();
+      } else {
+        // Case 3: No image at the start, use first non-empty text line
+        const lines = activeSlideContent.split("\n");
+        const firstLine =
+          lines.find((line) => line.trim().length > 0)?.trim() || "";
+        if (firstLine) {
+          potentialTitle = firstLine.replace(/^#+\s*/, "").trim();
+        }
+      }
+
+      // Truncate and set title if potentialTitle is found
+      if (potentialTitle) {
+        if (potentialTitle.length > 100) {
+          potentialTitle = potentialTitle.substring(0, 97) + "...";
+        }
+        title = `QuickSlides - ${potentialTitle}`;
+      }
+    }
+
+    document.title = title;
+
+    // Cleanup: Reset title when HomePage unmounts
+    return () => {
+      document.title = "QuickSlides"; // Or your base app title
+    };
+  }, [slides, activeSlideIndex]); // Depend on slides array and active index
 
   return (
     <div className="h-screen w-full bg-gray-100 p-4 flex flex-col items-center justify-center">

@@ -34,6 +34,52 @@ const SlidesViewer = () => {
     }
   }, [slideNumberParam, slideNumber, slides.length, navigate]);
 
+  // Effect to update document title based on active slide
+  useEffect(() => {
+    let title = "QuickSlides Presentation";
+    const imageOnlyRegex = /^\s*!\[(.*?)\]\(.+\)\s*$/;
+    const firstImageRegex = /^\s*!\[(.*?)\]\(.+\)/;
+
+    if (slides && slides.length > activeIndex && slides[activeIndex]) {
+      const activeSlideContent = slides[activeIndex];
+      const imageOnlyMatch = activeSlideContent.match(imageOnlyRegex);
+      const firstImageMatch = activeSlideContent.match(firstImageRegex);
+
+      let potentialTitle = "";
+
+      if (imageOnlyMatch && imageOnlyMatch[1]) {
+        // Case 1: Slide contains ONLY an image
+        potentialTitle = imageOnlyMatch[1].trim();
+      } else if (firstImageMatch && firstImageMatch[1]) {
+        // Case 2: Slide STARTS with an image
+        potentialTitle = firstImageMatch[1].trim();
+      } else {
+        // Case 3: No image at start, use first text line
+        const lines = activeSlideContent.split("\n");
+        const firstLine =
+          lines.find((line) => line.trim().length > 0)?.trim() || "";
+        if (firstLine) {
+          potentialTitle = firstLine.replace(/^#+\s*/, "").trim();
+        }
+      }
+
+      // Truncate and set title if potentialTitle is found
+      if (potentialTitle) {
+        if (potentialTitle.length > 100) {
+          potentialTitle = potentialTitle.substring(0, 97) + "...";
+        }
+        title = `Slide ${slideNumber} - ${potentialTitle}`;
+      }
+    }
+
+    document.title = title;
+
+    // Cleanup: Reset title when SlidesViewer unmounts
+    return () => {
+      document.title = "QuickSlides"; // Or your base app title
+    };
+  }, [slides, activeIndex, slideNumber]); // Depend on slides, active index, and slide number
+
   // Ensure we have slides and a valid index before rendering
   if (slides.length === 0 || activeIndex < 0 || activeIndex >= slides.length) {
     return null; // Or a loading/error state
@@ -84,6 +130,21 @@ function App() {
         // Pass the current slide number back via location state
         navigate("/", { state: { lastSlide: currentSlide } });
         return; // Stop further processing in this handler
+      }
+      // Handle Space and Shift+Space for navigation
+      else if (event.key === " ") {
+        event.preventDefault(); // Prevent page scroll
+        if (event.shiftKey) {
+          // Shift + Space: Go to previous slide
+          if (currentSlide > 1) {
+            nextSlide = currentSlide - 1;
+          }
+        } else {
+          // Space: Go to next slide
+          if (currentSlide < totalSlides) {
+            nextSlide = currentSlide + 1;
+          }
+        }
       }
       // Handle Cmd/Ctrl + Enter in presentation mode (same as Escape)
       else if (event.key === "Enter" && (event.metaKey || event.ctrlKey)) {

@@ -44,4 +44,28 @@ a cool **split effect**:
 
 ---
 
+# Keyboard Shortcuts
+
+---
+
+## Editing Mode
+
+- `Ctrl+Up/Down`: move between the slides
+- `Ctrl+Enter`: present from current slide
+- `Shift+Ctrl+Enter`: present from the first slide
+- `Esc`: reset the current presentation to default
+
+---
+
+## Presenting Mode
+
+- `F`: enter full-screen
+- `Esc`: exit presentation mode
+- `Left/Right`: move between slides
+- `Space`: move to the next slide
+- `Shift+Space`: move to the prev bar
+- `Ctrl+Enter`: edit current slide
+
+---
+
 The End
