@@ -26,7 +26,7 @@ flowchart TD
 
 ## Memory Bank Storage
 
-The memory bank is available in `/memory-bank`
+The memory bank is available in `./memory-bank/*` 
 
 ### Core Files (Required)
 1. `projectbrief.md`
