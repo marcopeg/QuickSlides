@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { Play, RotateCcw } from "lucide-react";
 import defaultSlidesContent from "@/slides.md?raw"; // Import raw markdown content
@@ -24,30 +24,50 @@ const HomePage: React.FC = () => {
     localStorage.setItem(LOCAL_STORAGE_KEY, newContent);
   };
 
-  const handlePresent = () => {
+  // Use useCallback to memoize handlePresent for the effect dependency array
+  const handlePresent = useCallback(() => {
     // Ensure latest content is saved before navigating
     localStorage.setItem(LOCAL_STORAGE_KEY, content);
     navigate("/slide/1");
-  };
+  }, [content, navigate]); // Include dependencies
 
-  // Function to handle key down events on the textarea
-  const handleKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    // Check for Cmd/Ctrl + Enter
-    if (event.key === "Enter" && (event.metaKey || event.ctrlKey)) {
-      event.preventDefault(); // Prevent default Enter behavior (e.g., new line)
-      handlePresent(); // Trigger presentation start
-    }
-  };
+  // Extracted core reset logic, memoized with useCallback
+  const resetContent = useCallback(() => {
+    localStorage.removeItem(LOCAL_STORAGE_KEY);
+    setContent(defaultSlidesContent);
+  }, []); // No dependencies needed here
 
-  // Function to reset content to default and clear localStorage
+  // useEffect for global keydown listener
+  useEffect(() => {
+    const handleGlobalKeyDown = (event: KeyboardEvent) => {
+      // Handle Cmd/Ctrl + Enter globally
+      if (event.key === "Enter" && (event.metaKey || event.ctrlKey)) {
+        event.preventDefault(); // Prevent default behavior (e.g., form submission if inside one)
+        handlePresent(); // Trigger presentation start
+      }
+      // Handle Escape globally
+      else if (event.key === "Escape") {
+        event.preventDefault(); // Prevent potential default browser actions for Escape
+        resetContent(); // Reset content directly without confirmation
+      }
+    };
+
+    window.addEventListener("keydown", handleGlobalKeyDown);
+
+    // Cleanup listener on component unmount
+    return () => {
+      window.removeEventListener("keydown", handleGlobalKeyDown);
+    };
+  }, [handlePresent, resetContent]); // Add memoized functions as dependencies
+
+  // Updated function to handle reset button click (with confirmation)
   const handleReset = () => {
     if (
       window.confirm(
         "Are you sure you want to reset the content to the default slides? Any changes will be lost."
       )
     ) {
-      localStorage.removeItem(LOCAL_STORAGE_KEY);
-      setContent(defaultSlidesContent);
+      resetContent(); // Call the extracted reset logic
     }
   };
 
@@ -60,7 +80,6 @@ const HomePage: React.FC = () => {
           <textarea
             value={content}
             onChange={handleContentChange}
-            onKeyDown={handleKeyDown}
             placeholder="Enter your slides here, separated by '---'"
             className="w-full h-96 p-4 border border-gray-300 rounded-md bg-gray-50 resize-none font-mono text-sm"
           />
