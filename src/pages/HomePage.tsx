@@ -6,10 +6,13 @@ import { Button } from "@/components/ui/button";
 import SlidesPreview from "@/components/SlidesPreview"; // Import the new component
 
 const LOCAL_STORAGE_KEY = "quickslides-content";
+const slideSeparator = "\n---\n"; // Make sure this matches SlidesPreview
 
 const HomePage: React.FC = () => {
   const [content, setContent] = useState<string>("");
   const navigate = useNavigate();
+  const [cursorPosition, setCursorPosition] = useState<number>(0);
+  const [activeSlideIndex, setActiveSlideIndex] = useState<number>(0);
 
   useEffect(() => {
     // Load content from local storage or use default slides
@@ -24,6 +27,33 @@ const HomePage: React.FC = () => {
     setContent(newContent);
     localStorage.setItem(LOCAL_STORAGE_KEY, newContent);
   };
+
+  // Update cursor position state
+  const handleCursorChange = useCallback(
+    (event: React.SyntheticEvent<HTMLTextAreaElement>) => {
+      setCursorPosition(event.currentTarget.selectionStart);
+    },
+    []
+  );
+
+  // Calculate active slide index based on cursor position
+  useEffect(() => {
+    let charCount = 0;
+    const slides = content.split(slideSeparator);
+    let currentSlideIndex = 0;
+    for (let i = 0; i < slides.length; i++) {
+      charCount += slides[i].length;
+      if (cursorPosition <= charCount) {
+        currentSlideIndex = i;
+        break;
+      }
+      // Add separator length if not the last slide
+      if (i < slides.length - 1) {
+        charCount += slideSeparator.length;
+      }
+    }
+    setActiveSlideIndex(currentSlideIndex);
+  }, [content, cursorPosition]);
 
   // Use useCallback to memoize handlePresent for the effect dependency array
   const handlePresent = useCallback(() => {
@@ -81,10 +111,19 @@ const HomePage: React.FC = () => {
             <textarea
               value={content}
               onChange={handleContentChange}
+              // Track cursor changes
+              onClick={handleCursorChange}
+              onKeyUp={handleCursorChange} // For arrow keys, backspace, delete etc.
+              // onSelect={handleCursorChange} // Can be too frequent, use onClick/onKeyUp
               placeholder="Enter your slides here, separated by '---'"
               className="w-2/3 h-full p-4 border border-gray-300 rounded-md bg-gray-50 resize-none font-mono text-sm"
             />
-            <SlidesPreview content={content} className="w-1/3 h-full" />
+            {/* Pass activeSlideIndex to SlidesPreview */}
+            <SlidesPreview
+              content={content}
+              activeSlideIndex={activeSlideIndex}
+              className="w-1/3 h-full"
+            />
           </div>
 
           <div className="flex justify-center gap-4">
