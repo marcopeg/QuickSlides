@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Play } from "lucide-react";
 import defaultSlidesContent from "@/slides.md?raw"; // Import raw markdown content
 import { Button } from "@/components/ui/button";
@@ -11,6 +11,7 @@ const slideSeparator = "\n---\n"; // Make sure this matches SlidesPreview
 const HomePage: React.FC = () => {
   const [content, setContent] = useState<string>("");
   const navigate = useNavigate();
+  const location = useLocation(); // Get location object
   const [cursorPosition, setCursorPosition] = useState<number>(0);
   const [activeSlideIndex, setActiveSlideIndex] = useState<number>(0);
   const textareaRef = useRef<HTMLTextAreaElement>(null); // Ref for the textarea
@@ -149,27 +150,59 @@ const HomePage: React.FC = () => {
     }
   }, [resetContent]); // Dependency: resetContent
 
-  // Effect to focus and select the first slide on initial load
+  // Helper function to request fullscreen
+  const requestFullscreen = () => {
+    const element = document.documentElement;
+    if (element.requestFullscreen) {
+      element.requestFullscreen().catch((err) => {
+        console.error(
+          `Error attempting to enable full-screen mode: ${err.message} (${err.name})`
+        );
+      });
+    } // Add checks for vendor prefixes if needed for older browsers
+    // else if (element.mozRequestFullScreen) { /* Firefox */ element.mozRequestFullScreen(); }
+    // else if (element.webkitRequestFullscreen) { /* Chrome, Safari & Opera */ element.webkitRequestFullscreen(); }
+    // else if (element.msRequestFullscreen) { /* IE/Edge */ element.msRequestFullscreen(); }
+  };
+
+  // Effect to focus and select the appropriate slide on load/navigation
   useEffect(() => {
     // Only run if content has been loaded and is not just whitespace
     if (content && content.trim().length > 0) {
-      // Simply call handlePreviewClick for the first slide
-      handlePreviewClick(0);
+      // Check location state for the last slide number from presentation mode
+      const lastSlide = location.state?.lastSlide as number | undefined;
+      let initialIndex = 0;
+      if (lastSlide && typeof lastSlide === "number" && lastSlide > 0) {
+        // Adjust for 0-based index and ensure it's within bounds
+        const numSlides = content.split(slideSeparator).length;
+        initialIndex = Math.min(numSlides - 1, lastSlide - 1);
+      }
+
+      // Call handlePreviewClick for the determined initial slide
+      handlePreviewClick(initialIndex);
     }
-    // NOTE: This effect will run whenever 'content' or 'handlePreviewClick' changes.
-    // 'handlePreviewClick' changes only when 'content' changes due to its dependency.
-    // So, this effectively runs when the content is set initially or significantly changed (like on reset).
-  }, [content, handlePreviewClick]); // Depend on content and the handler
+    // NOTE: This effect now also depends on location state.
+  }, [content, handlePreviewClick, location.state]); // Depend on content, handler, and location state
 
   // useEffect for global keydown listener
   useEffect(() => {
     const handleGlobalKeyDown = (event: KeyboardEvent) => {
       const isModifier = event.metaKey || event.ctrlKey;
 
-      // Handle Cmd/Ctrl + Enter globally
+      // Handle Cmd/Ctrl + Enter variants
       if (event.key === "Enter" && isModifier) {
         event.preventDefault();
-        handlePresent();
+        localStorage.setItem(LOCAL_STORAGE_KEY, content); // Save content before navigating
+
+        if (event.shiftKey) {
+          // Shift + Cmd/Ctrl + Enter: Fullscreen from slide 1
+          requestFullscreen();
+          navigate("/slide/1");
+        } else {
+          // Cmd/Ctrl + Enter: Present from active slide
+          const startSlide = activeSlideIndex + 1;
+          navigate(`/slide/${startSlide}`);
+        }
       }
       // Handle Escape globally
       else if (event.key === "Escape") {
@@ -204,12 +237,17 @@ const HomePage: React.FC = () => {
     return () => {
       window.removeEventListener("keydown", handleGlobalKeyDown);
     };
+    // Ensure requestFullscreen is stable or memoized if defined inside component
+    // Since it has no dependencies, defining it outside or using useCallback([]) works.
+    // Here, we just include it as it's defined in the component scope.
   }, [
     content,
     activeSlideIndex,
     handlePresent,
     handleReset,
     handlePreviewClick,
+    requestFullscreen,
+    navigate,
   ]); // Updated dependencies
 
   return (

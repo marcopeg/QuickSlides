@@ -81,8 +81,15 @@ function App() {
         }
       } else if (event.key === "Escape") {
         // Navigate to homepage if Escape is pressed on a slide page
-        navigate("/");
+        // Pass the current slide number back via location state
+        navigate("/", { state: { lastSlide: currentSlide } });
         return; // Stop further processing in this handler
+      }
+      // Handle Cmd/Ctrl + Enter in presentation mode (same as Escape)
+      else if (event.key === "Enter" && (event.metaKey || event.ctrlKey)) {
+        event.preventDefault(); // Prevent potential default actions
+        navigate("/", { state: { lastSlide: currentSlide } });
+        return;
       }
 
       // Only navigate if nextSlide was set (for Arrow keys)
