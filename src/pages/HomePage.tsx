@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Play, RotateCcw } from 'lucide-react';
-import defaultSlidesContent from '../slides.md?raw'; // Import raw markdown content
-import { Button } from '../components/ui/button';
+import defaultSlidesContent from '@/slides.md?raw'; // Import raw markdown content
+import { Button } from '@/components/ui/button';
 
 const LOCAL_STORAGE_KEY = 'quickslides-content';
 

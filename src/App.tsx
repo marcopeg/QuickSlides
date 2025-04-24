@@ -6,10 +6,10 @@ import {
   useNavigate,
   useParams,
 } from 'react-router-dom'
-import { useSlides } from './hooks/useSlides'
-import Carousel from './components/Carousel'
-import SlidePage from './pages/SlidePage'
-import HomePage from './pages/HomePage'
+import { useSlides } from '@/hooks/useSlides'
+import Carousel from '@/components/Carousel'
+import SlidePage from '@/pages/SlidePage'
+import HomePage from '@/pages/HomePage'
 
 // Component to handle fetching slide number and rendering Carousel
 const SlidesViewer = () => {

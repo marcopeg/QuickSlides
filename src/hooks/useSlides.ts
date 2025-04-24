@@ -1,8 +1,7 @@
 import { useMemo, useState, useEffect } from 'react';
 // Import raw markdown content using Vite's ?raw suffix
 // The `@` alias should resolve to the `src` directory based on tsconfig.json
-// import slideContent from '@/slides.md?raw'; // Alias caused issue
-import defaultSlideContent from '../slides.md?raw'; // Renamed for clarity
+import defaultSlideContent from '@/slides.md?raw'; // Now using proper path alias
 
 const LOCAL_STORAGE_KEY = 'quickslides-content';
 
