@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { Play, Download, Upload } from "lucide-react";
+import { Play, Download, Upload, Plus } from "lucide-react";
 import defaultSlidesContent from "@/slides.md?raw"; // Import raw markdown content
 import { Button } from "@/components/ui/button";
 import SlidesPreview from "@/components/SlidesPreview"; // Import the new component
@@ -14,7 +14,6 @@ const HomePage: React.FC = () => {
   const [isDraggingOver, setIsDraggingOver] = useState<boolean>(false); // State for drag overlay
   const navigate = useNavigate();
   const location = useLocation(); // Get location object
-  const [cursorPosition, setCursorPosition] = useState<number>(0);
   const [activeSlideIndex, setActiveSlideIndex] = useState<number>(0);
   const textareaRef = useRef<HTMLTextAreaElement>(null); // Ref for the textarea
   const initialFocusDoneRef = useRef<boolean>(false); // Flag for initial focus
@@ -34,62 +33,56 @@ const HomePage: React.FC = () => {
     localStorage.setItem(LOCAL_STORAGE_KEY, newContent);
   };
 
-  // Update cursor position state
+  // Update cursor position state AND active slide index
   const handleCursorChange = useCallback(
     (event: React.SyntheticEvent<HTMLTextAreaElement>) => {
-      setCursorPosition(event.currentTarget.selectionStart);
-    },
-    []
-  );
+      const currentCursorPos = event.currentTarget.selectionStart;
 
-  // Calculate active slide index based on cursor position
-  useEffect(() => {
-    let currentPosition = 0;
-    const slides = content.split(slideSeparator);
-    // Default to the last slide index, handles edge cases
-    let calculatedIndex = Math.max(0, slides.length - 1);
+      // Debug the current position
+      // console.log("DEBUG: Cursor changed to position:", currentCursorPos);
 
-    for (let i = 0; i < slides.length; i++) {
-      const slideContent = slides[i] ?? ""; // Handle potentially undefined slides
-      const endOfSlideContent = currentPosition + slideContent.length;
+      // Only calculate activeSlideIndex if cursorPosition is explicitly changed by user
+      // Avoid auto-calculation if position is set programmatically during initialFocus or addSlide
+      if (initialFocusDoneRef.current) {
+        let calculatedIndex = 0;
+        let currentPosition = 0;
+        const slides = content.split(slideSeparator);
+        calculatedIndex = Math.max(0, slides.length - 1);
 
-      // Check if cursor is within or exactly at the end of this slide's content
-      if (
-        cursorPosition >= currentPosition &&
-        cursorPosition <= endOfSlideContent
-      ) {
-        calculatedIndex = i;
-        break; // Found the slide
-      }
+        for (let i = 0; i < slides.length; i++) {
+          const slideContent = slides[i] ?? "";
+          const endOfSlideContent = currentPosition + slideContent.length;
 
-      // Check if cursor is within the separator area *after* this slide
-      if (i < slides.length - 1) {
-        const startOfSeparator = endOfSlideContent;
-        const endOfSeparator = startOfSeparator + slideSeparator.length;
-        if (
-          cursorPosition > startOfSeparator &&
-          cursorPosition <= endOfSeparator
-        ) {
-          // Cursor is in the separator, associate with the *next* slide
-          calculatedIndex = i + 1;
-          break; // Found the slide
+          if (
+            currentCursorPos >= currentPosition &&
+            currentCursorPos <= endOfSlideContent
+          ) {
+            calculatedIndex = i;
+            break;
+          }
+
+          if (i < slides.length - 1) {
+            const startOfSeparator = endOfSlideContent;
+            const endOfSeparator = startOfSeparator + slideSeparator.length;
+            if (
+              currentCursorPos > startOfSeparator &&
+              currentCursorPos <= endOfSeparator
+            ) {
+              calculatedIndex = i + 1;
+              break;
+            }
+            currentPosition = endOfSeparator;
+          } else {
+            currentPosition = endOfSlideContent;
+          }
         }
-        // Move position marker past the separator for the next iteration
-        currentPosition = endOfSeparator;
-      } else {
-        // Last slide, just move position marker past the content
-        currentPosition = endOfSlideContent;
-      }
-    }
 
-    // Only update if the index actually changed
-    setActiveSlideIndex((prevIndex) => {
-      if (prevIndex !== calculatedIndex) {
-        return calculatedIndex;
+        // console.log("DEBUG: Setting active slide index to:", calculatedIndex, "from cursor position:", currentCursorPos);
+        setActiveSlideIndex(calculatedIndex);
       }
-      return prevIndex;
-    });
-  }, [content, cursorPosition]);
+    },
+    [content] // Depends only on content now
+  );
 
   // Function to handle clicks on slide previews
   const handlePreviewClick = useCallback(
@@ -98,6 +91,10 @@ const HomePage: React.FC = () => {
       const currentContent = textareaRef.current?.value ?? "";
       if (!textareaRef.current || currentContent === null) return; // Guard if ref not ready or value is null
 
+      // Force-set the active slide index immediately
+      setActiveSlideIndex(clickedIndex);
+
+      // Calculate and focus the slide's text region
       const slides = currentContent.split(slideSeparator);
       let startPos = 0;
       let endPos = 0;
@@ -138,7 +135,6 @@ const HomePage: React.FC = () => {
 
       textareaRef.current.focus();
       textareaRef.current.setSelectionRange(startPos, endPos);
-      setCursorPosition(startPos);
 
       const textarea = textareaRef.current;
       const midPos = (startPos + endPos) / 2;
@@ -203,7 +199,6 @@ const HomePage: React.FC = () => {
       // Optionally, reset cursor or focus after import
       if (textareaRef.current) {
         textareaRef.current.focus();
-        setCursorPosition(0); // Move cursor to start
         handlePreviewClick(0); // Focus first slide preview
       }
     },
@@ -218,21 +213,25 @@ const HomePage: React.FC = () => {
   }, [content, navigate]); // Include dependencies
 
   // Extracted core reset logic, memoized with useCallback
-  const resetContent = useCallback(() => {
+  const clearContent = useCallback(() => {
     localStorage.removeItem(LOCAL_STORAGE_KEY);
-    setContent(defaultSlidesContent);
+    setContent(""); // Clear the content
+    if (textareaRef.current) {
+      textareaRef.current.focus(); // Focus textarea after clearing
+    }
+    setActiveSlideIndex(0); // Reset active slide index
   }, []); // No dependencies needed here
 
   // Wrap handleReset in useCallback
-  const handleReset = useCallback(() => {
+  const handleNewPresentation = useCallback(() => {
     if (
       window.confirm(
-        "Are you sure you want to reset the content to the default slides? Any changes will be lost."
+        "Are you sure you want to start a new presentation? The current content will be cleared."
       )
     ) {
-      resetContent(); // Call the extracted reset logic
+      clearContent(); // Call the extracted clearing logic
     }
-  }, [resetContent]); // Dependency: resetContent
+  }, [clearContent]); // Dependency: clearContent
 
   // Helper function to request fullscreen
   const requestFullscreen = () => {
@@ -251,21 +250,66 @@ const HomePage: React.FC = () => {
 
   // Effect to handle initial focus/selection or focus after navigation back
   useEffect(() => {
-    // Only run if content is loaded
-    if (content && content.trim().length > 0) {
-      // Check if initial focus/selection has already been done for this mount/navigation
+    // Only run if content is loaded and textarea is available
+    if (content && content.trim().length > 0 && textareaRef.current) {
+      // Check if initial focus/selection has already been done
       if (!initialFocusDoneRef.current) {
-        const lastSlide = location.state?.lastSlide as number | undefined;
         let initialIndex = 0;
+        // Handle navigation back state if present
+        const lastSlide = location.state?.lastSlide as number | undefined;
         if (lastSlide && typeof lastSlide === "number" && lastSlide > 0) {
           const numSlides = content.split(slideSeparator).length;
           initialIndex = Math.min(numSlides - 1, lastSlide - 1);
+          console.log(
+            "DEBUG: Setting from lastSlide navigation state, index:",
+            initialIndex
+          );
+          // Recalculate focus for the target slide index
+          handlePreviewClick(initialIndex); // Use existing logic for this case
+        } else {
+          // --- Direct Initial Focus Logic for index 0 ---
+          const slides = content.split(slideSeparator);
+          const startPos = 0;
+          let endPos = 0;
+          if (slides.length > 0) {
+            const firstSlideLength = slides[0] ? slides[0].length : 0;
+            endPos = firstSlideLength;
+          }
+          endPos = Math.min(content.length, Math.max(startPos, endPos));
+
+          console.log(
+            "DEBUG: Directly setting focus on index 0, startPos:",
+            startPos,
+            "endPos:",
+            endPos
+          );
+          console.log(
+            "DEBUG: First slide content:",
+            slides[0]?.substring(0, 50)
+          );
+
+          textareaRef.current.focus();
+          textareaRef.current.setSelectionRange(startPos, endPos);
+          setActiveSlideIndex(initialIndex); // Set to 0
+
+          console.log(
+            "DEBUG: Active slide index after direct setting:",
+            initialIndex
+          );
         }
-        handlePreviewClick(initialIndex); // Perform the focus/selection
+
         initialFocusDoneRef.current = true; // Mark as done
+
+        // Let's verify again after a small delay what happened
+        setTimeout(() => {
+          console.log(
+            "DEBUG: After a delay, active slide index is:",
+            activeSlideIndex
+          );
+        }, 100);
       }
     }
-  }, [content, location.state, handlePreviewClick]); // Runs when content loads or location state changes
+  }, [content, location.state, handlePreviewClick, activeSlideIndex]); // Added activeSlideIndex dependency
 
   // Effect to reset the initial focus flag when navigating back with state
   useEffect(() => {
@@ -301,7 +345,7 @@ const HomePage: React.FC = () => {
       // Handle Escape globally
       else if (event.key === "Escape") {
         event.preventDefault();
-        handleReset();
+        handleNewPresentation(); // Use the new handler
       }
       // Handle Cmd/Ctrl + Arrow Up/Down
       else if (
@@ -338,7 +382,7 @@ const HomePage: React.FC = () => {
     content,
     activeSlideIndex,
     handlePresent,
-    handleReset,
+    handleNewPresentation, // Updated dependency
     handlePreviewClick,
     requestFullscreen,
     navigate,
@@ -491,6 +535,8 @@ const HomePage: React.FC = () => {
       const newSlideContent = "# new slide";
       const slides = content.split(slideSeparator);
 
+      console.log("DEBUG: Adding slide at index:", index);
+
       // Insert the new slide content at the specified index
       slides.splice(index, 0, newSlideContent);
 
@@ -501,18 +547,31 @@ const HomePage: React.FC = () => {
       localStorage.setItem(LOCAL_STORAGE_KEY, newContent);
 
       // Need to wait for the state update to reflect in the DOM
-      // before calculating the new cursor position and focusing.
-      // Use a timeout or requestAnimationFrame for better reliability,
-      // or trigger handlePreviewClick in a subsequent effect.
-      // For simplicity here, we'll call it directly, but be aware of potential timing issues.
       requestAnimationFrame(() => {
         // Ensure textarea ref is available
         if (textareaRef.current) {
+          console.log(
+            "DEBUG: Before handlePreviewClick in handleAddSlide. Index:",
+            index
+          );
           handlePreviewClick(index); // Focus the newly added slide
+          console.log(
+            "DEBUG: After handlePreviewClick in handleAddSlide. Active index:",
+            activeSlideIndex
+          );
+
+          // Setting explicitly as a failsafe
+          setTimeout(() => {
+            setActiveSlideIndex(index);
+            console.log(
+              "DEBUG: Explicitly set activeSlideIndex in failsafe:",
+              index
+            );
+          }, 0);
         }
       });
     },
-    [content, handlePreviewClick] // Dependencies: content and handlePreviewClick
+    [content, handlePreviewClick, activeSlideIndex] // Added activeSlideIndex
   );
 
   return (
@@ -576,12 +635,18 @@ const HomePage: React.FC = () => {
                 <Upload className="mr-2 h-4 w-4" />
                 Import
               </Button>
+              <Button
+                variant="outline"
+                onClick={handleNewPresentation}
+                className="flex items-center"
+                title="Start a new presentation (Esc)"
+              >
+                <Plus className="mr-2 h-4 w-4" />
+                New Presentation
+              </Button>
             </div>
 
             <div className="flex gap-4">
-              <Button onClick={handleReset} className="flex items-center">
-                reset
-              </Button>
               <Button
                 onClick={handlePresent}
                 className="flex items-center bg-orange-500 hover:bg-orange-600 text-white"
