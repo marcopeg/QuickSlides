@@ -164,15 +164,37 @@ const HomePage: React.FC = () => {
   // useEffect for global keydown listener
   useEffect(() => {
     const handleGlobalKeyDown = (event: KeyboardEvent) => {
+      const isModifier = event.metaKey || event.ctrlKey;
+
       // Handle Cmd/Ctrl + Enter globally
-      if (event.key === "Enter" && (event.metaKey || event.ctrlKey)) {
-        event.preventDefault(); // Prevent default behavior (e.g., form submission if inside one)
-        handlePresent(); // Trigger presentation start
+      if (event.key === "Enter" && isModifier) {
+        event.preventDefault();
+        handlePresent();
       }
       // Handle Escape globally
       else if (event.key === "Escape") {
-        event.preventDefault(); // Prevent potential default browser actions for Escape
-        handleReset(); // Call handleReset to include confirmation
+        event.preventDefault();
+        handleReset();
+      }
+      // Handle Cmd/Ctrl + Arrow Up/Down
+      else if (
+        (event.key === "ArrowUp" || event.key === "ArrowDown") &&
+        isModifier
+      ) {
+        event.preventDefault();
+        const slides = content.split(slideSeparator);
+        const numSlides = slides.length;
+        let newIndex = activeSlideIndex;
+
+        if (event.key === "ArrowUp") {
+          newIndex = Math.max(0, activeSlideIndex - 1);
+        } else if (event.key === "ArrowDown") {
+          newIndex = Math.min(numSlides - 1, activeSlideIndex + 1);
+        }
+
+        if (newIndex !== activeSlideIndex) {
+          handlePreviewClick(newIndex);
+        }
       }
     };
 
@@ -182,7 +204,13 @@ const HomePage: React.FC = () => {
     return () => {
       window.removeEventListener("keydown", handleGlobalKeyDown);
     };
-  }, [handlePresent, handleReset]); // Add memoized functions as dependencies
+  }, [
+    content,
+    activeSlideIndex,
+    handlePresent,
+    handleReset,
+    handlePreviewClick,
+  ]); // Updated dependencies
 
   return (
     <div className="h-screen w-full bg-gray-100 p-4 flex flex-col items-center justify-center">
