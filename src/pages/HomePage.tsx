@@ -72,16 +72,15 @@ const HomePage: React.FC = () => {
   }, [handlePresent, handleReset]); // Add memoized functions as dependencies
 
   return (
-    <div className="h-screen w-full bg-gray-100 p-4 flex items-center justify-center">
-      <div className="w-full max-w-4xl mx-auto bg-white rounded-lg shadow-lg overflow-hidden">
-        <div className="p-6">
-          <h1 className="text-3xl font-bold text-center mb-6">QuickSlides</h1>
-
+    <div className="h-screen w-full bg-gray-100 p-4 flex flex-col items-center justify-center">
+      <h1 className="text-3xl font-bold text-center mb-6">QuickSlides</h1>
+      <div className="w-full max-w-4xl mx-auto bg-white rounded-lg shadow-lg overflow-hidden h-[85vh]">
+        <div className="p-6 flex flex-col h-full">
           <textarea
             value={content}
             onChange={handleContentChange}
             placeholder="Enter your slides here, separated by '---'"
-            className="w-full h-96 p-4 border border-gray-300 rounded-md bg-gray-50 resize-none font-mono text-sm"
+            className="w-full flex-grow p-4 border border-gray-300 rounded-md bg-gray-50 resize-none font-mono text-sm mb-4"
           />
 
           <div className="flex justify-center gap-4 mt-4">
