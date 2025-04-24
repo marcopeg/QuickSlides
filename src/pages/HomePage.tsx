@@ -30,6 +30,15 @@ const HomePage: React.FC = () => {
     navigate("/slide/1");
   };
 
+  // Function to handle key down events on the textarea
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    // Check for Cmd/Ctrl + Enter
+    if (event.key === "Enter" && (event.metaKey || event.ctrlKey)) {
+      event.preventDefault(); // Prevent default Enter behavior (e.g., new line)
+      handlePresent(); // Trigger presentation start
+    }
+  };
+
   // Function to reset content to default and clear localStorage
   const handleReset = () => {
     if (
@@ -51,6 +60,7 @@ const HomePage: React.FC = () => {
           <textarea
             value={content}
             onChange={handleContentChange}
+            onKeyDown={handleKeyDown}
             placeholder="Enter your slides here, separated by '---'"
             className="w-full h-96 p-4 border border-gray-300 rounded-md bg-gray-50 resize-none font-mono text-sm"
           />
