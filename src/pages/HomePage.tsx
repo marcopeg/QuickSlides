@@ -113,6 +113,11 @@ const HomePage: React.FC = () => {
         }
       }
 
+      // Adjust endPos to potentially omit trailing newline
+      if (endPos > startPos && currentContent[endPos - 1] === "\n") {
+        endPos--;
+      }
+
       const slideContent = slides[clickedIndex];
       if (slideContent) {
         const leadingNewlineRegex = /^\n\s*/;
