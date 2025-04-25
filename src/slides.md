@@ -66,7 +66,14 @@ a cool **split effect**:
 
 ---
 
-<div class="w-full h-full bg-blue-500 text-white p-4 rounded">fooo</div>
+<div class="w-full h-full bg-blue-500 text-white flex">
+  <div class="w-1/2 flex justify-center items-center border border-white">
+    Column 1
+  </div>
+  <div class="w-1/2 flex justify-center items-center border border-white"  style="width: 50%">
+    Column 2
+  </div>
+</div>
 
 ---
 

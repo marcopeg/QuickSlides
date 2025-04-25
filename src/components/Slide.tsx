@@ -2,6 +2,7 @@ import React from "react";
 import MarkdownSlide from "./MarkdownSlide"; // Use relative path
 import CoverSlide from "./CoverSlide"; // Use relative path
 import SplitCoverSlide from "./SplitCoverSlide"; // Import the new component
+import HTMLSlide from "./HTMLSlide"; // Import the new HTMLSlide component
 import SlideErrorBoundary from "./SlideErrorBoundary"; // Import the Error Boundary
 
 interface SlideProps {
@@ -16,6 +17,13 @@ const allImagesRegex = /!\[.*?\]\((.+?)\)/g;
 const Slide: React.FC<SlideProps> = ({ content }) => {
   const processedContent = String(content || "");
   const trimmedContent = processedContent.trim();
+
+  // --- Check for pure HTML ---
+  if (trimmedContent.startsWith("<") && trimmedContent.endsWith(">")) {
+    // Simple check: if it starts with < and ends with >, assume it's HTML
+    // This might need refinement for more complex cases (e.g., comments, doctype)
+    return <HTMLSlide content={trimmedContent} />;
+  }
 
   // --- Check for exactly two images ---
   const allImageMatches = [...processedContent.matchAll(allImagesRegex)]; // Find all image tags
