@@ -35,3 +35,21 @@ BUT.
 I CAN'T STOP.
 
 PLEASE HELP ME STOP.
+
+## Messy Code
+
+I'm trying my best to avoid coding on this project.
+It's a **Vibe Coding Demo** afterall.
+
+But I can't restrain myself from looking at the code that's been produced.
+
+> And I'm horrified 🤦‍♂️.
+
+The `HomePage.tsx` is quickly growing over 600 lines of code that mixes state, behavior, and presentational responsabilities.
+
+🔥 It's nearly unmaintainable.
+
+> I did a few tests in other projects, and if you put the developer's hat you
+> can guide the AI in decomposing into isolated components and hooks.
+>
+> But that's not what this demo is about.

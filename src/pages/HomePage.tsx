@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { Play, Download, Upload, Plus } from "lucide-react";
+import { Play, Download, Upload, Plus, PanelLeft } from "lucide-react";
 import defaultSlidesContent from "@/slides.md?raw"; // Import raw markdown content
 import { Button } from "@/components/ui/button";
 import SlidesPreview from "@/components/SlidesPreview"; // Import the new component
@@ -573,7 +573,7 @@ const HomePage: React.FC = () => {
 
   return (
     <div
-      className="h-screen w-full bg-gray-100 p-4 flex flex-col items-center justify-center relative" // Added relative positioning
+      className="h-screen w-full bg-gray-100 px-4 pt-2 pb-2 md:pt-4 sm:pb-4 flex flex-col items-center justify-start relative"
       onDragEnter={handleDragEnter}
       onDragOver={handleDragOver} // Keep over state active
       onDragLeave={handleDragLeave}
@@ -588,10 +588,15 @@ const HomePage: React.FC = () => {
         </div>
       )}
 
-      <h1 className="text-3xl font-bold text-center mb-6">QuickSlides</h1>
-      <div className="w-full max-w-4xl mx-auto bg-white rounded-lg shadow-lg overflow-hidden h-[85vh]">
+      {/* Title: Always left-aligned, responsive size/margin - smaller up to md */}
+      <div className="w-full max-w-4xl flex items-center justify-start mb-2 md:mb-6">
+        <PanelLeft className="h-5 w-5 mr-2" />
+        <h1 className="text-xl md:text-3xl font-bold text-left">QuickSlides</h1>
+      </div>
+
+      <div className="w-full max-w-4xl mx-auto bg-white rounded-lg shadow-lg overflow-hidden h-[90vh] sm:h-[85vh]">
         <div className="p-2 sm:p-4 md:p-6 flex flex-col h-full">
-          <div className="flex flex-row flex-grow gap-4 mb-4 overflow-hidden">
+          <div className="flex flex-row flex-grow gap-4 mb-4 sm:mb-4 overflow-hidden">
             <textarea
               ref={textareaRef} // Attach the ref
               value={content}
@@ -612,8 +617,8 @@ const HomePage: React.FC = () => {
             />
           </div>
 
-          <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
-            <div className="flex flex-wrap justify-center sm:justify-start gap-2 sm:gap-4 w-full sm:w-auto">
+          <div className="flex flex-col sm:flex-row justify-between items-center gap-1 sm:gap-4">
+            <div className="flex justify-between sm:justify-start gap-2 sm:gap-4 w-full sm:w-auto">
               <Button
                 variant="outline"
                 onClick={handleDownload}
