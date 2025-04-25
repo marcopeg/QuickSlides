@@ -618,7 +618,7 @@ const HomePage: React.FC = () => {
                 variant="outline"
                 onClick={handleDownload}
                 title="Download Markdown"
-                className="flex items-center text-xs sm:text-sm"
+                className="flex items-center text-xs sm:text-sm h-8 px-2"
               >
                 <Download className="mr-1 sm:mr-2 h-3 sm:h-4 w-3 sm:w-4" />
                 Export
@@ -627,7 +627,7 @@ const HomePage: React.FC = () => {
                 variant="outline"
                 onClick={handleImport}
                 title="Import Markdown"
-                className="flex items-center text-xs sm:text-sm"
+                className="flex items-center text-xs sm:text-sm h-8 px-2"
               >
                 <Upload className="mr-1 sm:mr-2 h-3 sm:h-4 w-3 sm:w-4" />
                 Import
@@ -635,7 +635,7 @@ const HomePage: React.FC = () => {
               <Button
                 variant="outline"
                 onClick={handleNewPresentation}
-                className="flex items-center text-xs sm:text-sm"
+                className="flex items-center text-xs sm:text-sm h-8 px-2"
                 title="Start a new presentation (Esc)"
               >
                 <Plus className="mr-1 sm:mr-2 h-3 sm:h-4 w-3 sm:w-4" />
@@ -643,12 +643,12 @@ const HomePage: React.FC = () => {
               </Button>
             </div>
 
-            <div className="flex gap-4 mt-2 sm:mt-0">
+            <div className="w-full sm:w-auto mt-2 sm:mt-0">
               <Button
                 onClick={handlePresent}
-                className="flex items-center bg-orange-500 hover:bg-orange-600 text-white text-xs sm:text-sm"
+                className="w-full sm:w-auto flex items-center justify-center sm:justify-start bg-orange-500 hover:bg-orange-600 text-white py-3 sm:py-2 px-3 text-base sm:text-sm font-medium"
               >
-                Present <Play className="ml-1 sm:ml-2 h-3 sm:h-4 w-3 sm:w-4" />
+                Present <Play className="ml-2 h-5 w-5 sm:h-4 sm:w-4" />
               </Button>
             </div>
           </div>
