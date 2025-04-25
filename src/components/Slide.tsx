@@ -2,6 +2,7 @@ import React from "react";
 import MarkdownSlide from "./MarkdownSlide"; // Use relative path
 import CoverSlide from "./CoverSlide"; // Use relative path
 import SplitCoverSlide from "./SplitCoverSlide"; // Import the new component
+import SlideErrorBoundary from "./SlideErrorBoundary"; // Import the Error Boundary
 
 interface SlideProps {
   content: string;
@@ -36,8 +37,12 @@ const Slide: React.FC<SlideProps> = ({ content }) => {
     return <CoverSlide imageUrl={imageUrl} />;
   }
 
-  // --- Fallback to MarkdownSlide ---
-  return <MarkdownSlide content={processedContent} />;
+  // --- Fallback to MarkdownSlide, wrapped in Error Boundary ---
+  return (
+    <SlideErrorBoundary>
+      <MarkdownSlide content={processedContent} />
+    </SlideErrorBoundary>
+  );
 };
 
 export default Slide;
