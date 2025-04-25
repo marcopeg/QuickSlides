@@ -611,8 +611,8 @@ const HomePage: React.FC = () => {
       </div>
 
       {/* Main Content Area - Takes remaining space */}
-      <div className="w-full max-w-4xl mx-auto bg-white rounded-lg shadow-lg overflow-hidden flex-grow mt-4 mb-4 px-4 pb-2 sm:pb-4">
-        <div className="p-2 sm:p-4 md:p-6 flex flex-col h-full">
+      <div className="w-full max-w-4xl mx-auto bg-white rounded-lg shadow-lg overflow-hidden flex-grow px-0 pb-2 mb-0 mt-0 lg:mt-4 lg:mb-4">
+        <div className="p-2 sm:p-4 md:p-4 flex flex-col h-full">
           <div className="flex flex-row flex-grow gap-4 mb-4 sm:mb-4 overflow-hidden">
             <textarea
               ref={textareaRef} // Attach the ref
