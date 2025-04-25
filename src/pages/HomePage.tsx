@@ -573,7 +573,7 @@ const HomePage: React.FC = () => {
 
   return (
     <div
-      className="h-screen w-full bg-gray-100 px-4 pt-2 pb-2 md:pt-4 sm:pb-4 flex flex-col items-center justify-start relative"
+      className="h-screen w-full bg-gray-100 flex flex-col items-center justify-start relative"
       onDragEnter={handleDragEnter}
       onDragOver={handleDragOver} // Keep over state active
       onDragLeave={handleDragLeave}
@@ -588,13 +588,30 @@ const HomePage: React.FC = () => {
         </div>
       )}
 
-      {/* Title: Always left-aligned, responsive size/margin - smaller up to md */}
-      <div className="w-full max-w-4xl flex items-center justify-start mb-2 md:mb-6">
-        <PanelLeft className="h-5 w-5 mr-2" />
-        <h1 className="text-xl md:text-3xl font-bold text-left">QuickSlides</h1>
+      {/* Sticky Header Wrapper */}
+      <div className="sticky top-0 z-10 bg-gray-100 w-full shadow-sm">
+        {/* Original Title Bar Content - Centered */}
+        <div className="w-full max-w-4xl flex items-center justify-between mx-auto px-4 py-2 md:py-4">
+          {/* Group Title and Icon */}
+          <div className="flex items-center">
+            <PanelLeft className="h-5 w-5 mr-2" />
+            <h1 className="text-xl md:text-3xl font-bold text-left">
+              QuickSlides
+            </h1>
+          </div>
+          {/* Present Button - Always visible in sticky header */}
+          <Button
+            onClick={handlePresent}
+            className="flex items-center justify-center bg-orange-500 hover:bg-orange-600 text-white h-8 px-3 text-sm font-medium"
+            title="Present (Cmd/Ctrl+Enter)"
+          >
+            Present <Play className="ml-1 h-4 w-4" />
+          </Button>
+        </div>
       </div>
 
-      <div className="w-full max-w-4xl mx-auto bg-white rounded-lg shadow-lg overflow-hidden h-[90vh] sm:h-[85vh]">
+      {/* Main Content Area - Takes remaining space */}
+      <div className="w-full max-w-4xl mx-auto bg-white rounded-lg shadow-lg overflow-hidden flex-grow mt-4 mb-4 px-4 pb-2 sm:pb-4">
         <div className="p-2 sm:p-4 md:p-6 flex flex-col h-full">
           <div className="flex flex-row flex-grow gap-4 mb-4 sm:mb-4 overflow-hidden">
             <textarea
@@ -645,15 +662,6 @@ const HomePage: React.FC = () => {
               >
                 <Plus className="mr-1 sm:mr-2 h-3 sm:h-4 w-3 sm:w-4" />
                 New
-              </Button>
-            </div>
-
-            <div className="w-full sm:w-auto mt-2 sm:mt-0">
-              <Button
-                onClick={handlePresent}
-                className="w-full sm:w-auto flex items-center justify-center sm:justify-start bg-orange-500 hover:bg-orange-600 text-white py-3 sm:py-2 px-3 text-base sm:text-sm font-medium"
-              >
-                Present <Play className="ml-2 h-5 w-5 sm:h-4 sm:w-4" />
               </Button>
             </div>
           </div>
