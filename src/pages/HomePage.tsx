@@ -774,8 +774,13 @@ const HomePage: React.FC = () => {
                   <Button
                     variant="outline"
                     onClick={handleShare}
-                    title="Share Presentation"
+                    title={
+                      content.length > 3000
+                        ? "Content too large to share via URL (max 3000 chars)"
+                        : "Share Presentation"
+                    }
                     className="flex items-center text-xs sm:text-sm h-8 px-2"
+                    disabled={content.length > 3000} // Disable if content is too long
                   >
                     <Share2 className="mr-1 sm:mr-2 h-3 sm:h-4 w-3 sm:w-4" />
                     Share
