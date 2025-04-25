@@ -21,7 +21,8 @@ Just as you write your documentation on GitHub
 
 # 🚀 Share via QR Code
 
-Click on "share" and point a new device to the QR code.
+<div class="text-center">Click on "share" and point a new device to the QR code.</div>
+<div class="text-center text-xs italic">(up to 4000 chars)</div>
 
 ---
 
