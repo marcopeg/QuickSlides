@@ -18,9 +18,34 @@ const SlidesViewer = () => {
   }>();
   const navigate = useNavigate();
   const slides = useSlides(); // Fetch slides here
+  const totalSlides = slides.length;
 
   const slideNumber = parseInt(slideNumberParam || "1", 10);
   const activeIndex = slideNumber - 1; // Calculate 0-based index for Carousel
+
+  // --- Swipe Handlers ---
+  const handleSwipeLeft = () => {
+    // Go to the next slide, but don't loop (stay on last)
+    const nextSlideNumber = Math.min(slideNumber + 1, totalSlides);
+    if (nextSlideNumber !== slideNumber) {
+      navigate(`/slide/${nextSlideNumber}`);
+    }
+  };
+
+  const handleSwipeRight = () => {
+    // Go to the previous slide, but don't loop (stay on first)
+    const prevSlideNumber = Math.max(slideNumber - 1, 1);
+    if (prevSlideNumber !== slideNumber) {
+      navigate(`/slide/${prevSlideNumber}`);
+    }
+  };
+
+  const handleSwipeVertical = () => {
+    // Exit to homepage
+    console.log("Vertical swipe detected, exiting to homepage...");
+    navigate("/", { state: { lastSlide: slideNumber } });
+  };
+  // --- End Swipe Handlers ---
 
   // Validation and redirection logic moved here from SlidePage
   useEffect(() => {
@@ -86,7 +111,12 @@ const SlidesViewer = () => {
   }
 
   return (
-    <Carousel activeIndex={activeIndex}>
+    <Carousel
+      activeIndex={activeIndex}
+      onSwipeLeft={handleSwipeLeft}
+      onSwipeRight={handleSwipeRight}
+      onSwipeVertical={handleSwipeVertical}
+    >
       {slides.map((content, index) => (
         <SlidePage key={index} content={content} />
       ))}
