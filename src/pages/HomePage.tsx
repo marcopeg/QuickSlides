@@ -590,7 +590,7 @@ const HomePage: React.FC = () => {
 
       <h1 className="text-3xl font-bold text-center mb-6">QuickSlides</h1>
       <div className="w-full max-w-4xl mx-auto bg-white rounded-lg shadow-lg overflow-hidden h-[85vh]">
-        <div className="p-6 flex flex-col h-full">
+        <div className="p-2 sm:p-4 md:p-6 flex flex-col h-full">
           <div className="flex flex-row flex-grow gap-4 mb-4 overflow-hidden">
             <textarea
               ref={textareaRef} // Attach the ref
@@ -601,54 +601,54 @@ const HomePage: React.FC = () => {
               onKeyUp={handleCursorChange} // For arrow keys, backspace, delete etc.
               // onSelect={handleCursorChange} // Can be too frequent, use onClick/onKeyUp
               placeholder="Enter your slides here, separated by '---'"
-              className="w-2/3 h-full p-4 border border-gray-300 rounded-md bg-gray-50 resize-none font-mono text-sm"
+              className="w-full sm:w-2/3 h-full p-4 border border-gray-300 rounded-md bg-gray-50 resize-none font-mono text-sm transition-all duration-300 ease-in-out"
             />
             <SlidesPreview
               content={content}
               activeSlideIndex={activeSlideIndex}
               onPreviewClick={handlePreviewClick} // Pass the handler down
               onAddSlide={handleAddSlide} // Pass the new handler
-              className="w-1/3 h-full"
+              className="hidden sm:block sm:w-1/3 h-full transition-all duration-300 ease-in-out"
             />
           </div>
 
-          <div className="flex justify-between items-center gap-4">
-            <div className="flex gap-4">
+          <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
+            <div className="flex flex-wrap justify-center sm:justify-start gap-2 sm:gap-4 w-full sm:w-auto">
               <Button
                 variant="outline"
                 onClick={handleDownload}
                 title="Download Markdown"
-                className="flex items-center"
+                className="flex items-center text-xs sm:text-sm"
               >
-                <Download className="mr-2 h-4 w-4" />
+                <Download className="mr-1 sm:mr-2 h-3 sm:h-4 w-3 sm:w-4" />
                 Export
               </Button>
               <Button
                 variant="outline"
                 onClick={handleImport}
                 title="Import Markdown"
-                className="flex items-center"
+                className="flex items-center text-xs sm:text-sm"
               >
-                <Upload className="mr-2 h-4 w-4" />
+                <Upload className="mr-1 sm:mr-2 h-3 sm:h-4 w-3 sm:w-4" />
                 Import
               </Button>
               <Button
                 variant="outline"
                 onClick={handleNewPresentation}
-                className="flex items-center"
+                className="flex items-center text-xs sm:text-sm"
                 title="Start a new presentation (Esc)"
               >
-                <Plus className="mr-2 h-4 w-4" />
-                New Presentation
+                <Plus className="mr-1 sm:mr-2 h-3 sm:h-4 w-3 sm:w-4" />
+                New
               </Button>
             </div>
 
-            <div className="flex gap-4">
+            <div className="flex gap-4 mt-2 sm:mt-0">
               <Button
                 onClick={handlePresent}
-                className="flex items-center bg-orange-500 hover:bg-orange-600 text-white"
+                className="flex items-center bg-orange-500 hover:bg-orange-600 text-white text-xs sm:text-sm"
               >
-                Present <Play className="ml-2 h-4 w-4" />
+                Present <Play className="ml-1 sm:ml-2 h-3 sm:h-4 w-3 sm:w-4" />
               </Button>
             </div>
           </div>

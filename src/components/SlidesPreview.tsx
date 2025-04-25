@@ -64,12 +64,27 @@ const SlidesPreview: React.FC<SlidesPreviewProps> = ({
 
   // Effect for scrolling active slide into view
   useEffect(() => {
-    const activeSlideElement = slideRefs.current[activeSlideIndex];
-    if (activeSlideElement) {
-      activeSlideElement.scrollIntoView({
-        behavior: "smooth",
-        block: "center",
-      });
+    // We need a better way to determine if the component is actually visible in the DOM
+    // Check if we're in a browser environment and if the ref is in the document
+    if (typeof window !== "undefined" && scrollContainerRef.current) {
+      // A small delay to ensure the DOM has updated, especially with Tailwind's responsive classes
+      setTimeout(() => {
+        const activeSlideElement = slideRefs.current[activeSlideIndex];
+        if (activeSlideElement) {
+          // Check if the preview is actually visible using computed style
+          const computedStyle = window.getComputedStyle(
+            scrollContainerRef.current!
+          );
+          const isVisible = computedStyle.display !== "none";
+
+          if (isVisible) {
+            activeSlideElement.scrollIntoView({
+              behavior: "smooth",
+              block: "center",
+            });
+          }
+        }
+      }, 50);
     }
   }, [activeSlideIndex]);
 
