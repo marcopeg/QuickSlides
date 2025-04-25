@@ -5,6 +5,15 @@ import defaultSlidesContent from "@/slides.md?raw"; // Import raw markdown conte
 import { Button } from "@/components/ui/button";
 import SlidesPreview from "@/components/SlidesPreview"; // Import the new component
 import { useSlides } from "@/hooks/useSlides"; // Import useSlides
+import LZString from "lz-string"; // Import lz-string
+import * as QRCodeReact from "qrcode.react"; // Import namespace
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"; // Import Dialog components
 
 const LOCAL_STORAGE_KEY = "quickslides-content";
 const slideSeparator = "\n---\n"; // Make sure this matches SlidesPreview
@@ -19,6 +28,8 @@ const HomePage: React.FC = () => {
   const initialFocusDoneRef = useRef<boolean>(false); // Flag for initial focus
   const fileInputRef = useRef<HTMLInputElement>(null); // Ref for the hidden file input
   const slides = useSlides(); // Use the hook to get processed slides
+  const [isShareDialogOpen, setIsShareDialogOpen] = useState<boolean>(false); // State for dialog
+  const [shareUrl, setShareUrl] = useState<string>(""); // State for QR code URL
 
   useEffect(() => {
     // Load content from local storage or use default slides
@@ -192,11 +203,19 @@ const HomePage: React.FC = () => {
     fileInputRef.current?.click(); // Trigger click on the hidden input
   }, []); // No dependencies needed here
 
-  // Placeholder for Share functionality
+  // Handles Share button click: generates URL and opens dialog
   const handleShare = useCallback(() => {
-    console.log("Share button clicked - implement logic here");
-    // Potential implementation: Copy link, Web Share API, etc.
-  }, []);
+    if (content) {
+      // Compress and encode the content
+      const compressedContent = LZString.compressToBase64(content);
+      // Construct the URL
+      const url = `${window.location.origin}?q=${compressedContent}`;
+      setShareUrl(url);
+      setIsShareDialogOpen(true);
+    } else {
+      window.alert("Nothing to share yet!");
+    }
+  }, [content]);
 
   // Shared function to process imported content
   const processImportedContent = useCallback(
@@ -704,15 +723,42 @@ const HomePage: React.FC = () => {
                 <Download className="mr-1 sm:mr-2 h-3 sm:h-4 w-3 sm:w-4" />
                 Export
               </Button>
-              <Button
-                variant="outline"
-                onClick={handleShare}
-                title="Share Presentation (coming soon)"
-                className="flex items-center text-xs sm:text-sm h-8 px-2"
+              <Dialog
+                open={isShareDialogOpen}
+                onOpenChange={setIsShareDialogOpen}
               >
-                <Share2 className="mr-1 sm:mr-2 h-3 sm:h-4 w-3 sm:w-4" />
-                Share
-              </Button>
+                <DialogTrigger asChild>
+                  <Button
+                    variant="outline"
+                    onClick={handleShare}
+                    title="Share Presentation"
+                    className="flex items-center text-xs sm:text-sm h-8 px-2"
+                  >
+                    <Share2 className="mr-1 sm:mr-2 h-3 sm:h-4 w-3 sm:w-4" />
+                    Share
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-[425px] bg-white">
+                  <DialogHeader>
+                    <DialogTitle>Share Presentation</DialogTitle>
+                  </DialogHeader>
+                  <div className="flex flex-col items-center justify-center p-4">
+                    {shareUrl && (
+                      <>
+                        <QRCodeReact.QRCodeCanvas
+                          value={shareUrl}
+                          size={256}
+                          className="mb-4"
+                        />
+                        <p className="text-sm text-muted-foreground text-center">
+                          Scan this code or share the link to view this
+                          presentation.
+                        </p>
+                      </>
+                    )}
+                  </div>
+                </DialogContent>
+              </Dialog>
               <Button
                 variant="outline"
                 onClick={handleNewPresentation}
