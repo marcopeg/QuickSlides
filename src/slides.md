@@ -64,13 +64,15 @@ a cool **split effect**:
 
 # Embed HTML
 
+Run your custom layouts with TailwindCSS support!
+
 ---
 
-<div class="w-full h-full bg-blue-500 text-white flex">
-  <div class="w-1/2 flex justify-center items-center border border-white">
+<div class="w-full h-full flex bg-blue-500 text-white">
+  <div class="flex-grow flex justify-center items-center" style="border-color: white; border-right-width: 5px">
     Column 1
   </div>
-  <div class="w-1/2 flex justify-center items-center border border-white"  style="width: 50%">
+  <div class="w-1/3 flex justify-center items-center">
     Column 2
   </div>
 </div>
