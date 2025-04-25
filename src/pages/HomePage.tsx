@@ -31,6 +31,55 @@ const HomePage: React.FC = () => {
   const [isShareDialogOpen, setIsShareDialogOpen] = useState<boolean>(false); // State for dialog
   const [shareUrl, setShareUrl] = useState<string>(""); // State for QR code URL
 
+  // Effect to load shared content from URL on mount
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const sharedData = params.get("q");
+
+    if (sharedData) {
+      // Remove query param from URL immediately to prevent reprocessing
+      navigate(".", { replace: true });
+
+      try {
+        const decompressedContent = LZString.decompressFromBase64(sharedData);
+
+        if (decompressedContent !== null && decompressedContent !== undefined) {
+          // Check against current content (before potential update)
+          const currentContent =
+            localStorage.getItem(LOCAL_STORAGE_KEY) ?? defaultSlidesContent;
+
+          if (decompressedContent !== currentContent) {
+            if (
+              window.confirm(
+                "A shared presentation was found in the URL. Do you want to load it? This will replace your current content."
+              )
+            ) {
+              // Use processImportedContent to update state and localStorage
+              processImportedContent(decompressedContent);
+              // Optionally, focus the first slide after import
+              // handlePreviewClick(0); // Already handled by processImportedContent
+            }
+          } else {
+            // Content is the same, no need to ask or update
+            console.log("Shared content matches current content.");
+          }
+        } else {
+          console.error("Failed to decompress shared content.");
+          window.alert(
+            "Error: Could not load the shared presentation data from the URL."
+          );
+        }
+      } catch (error) {
+        console.error("Error processing shared content URL:", error);
+        window.alert(
+          "Error: Could not process the shared presentation data from the URL."
+        );
+      }
+    }
+    // Run only once on mount
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Empty dependency array ensures it runs only once
+
   useEffect(() => {
     // Load content from local storage or use default slides
     const storedContent = localStorage.getItem(LOCAL_STORAGE_KEY);
