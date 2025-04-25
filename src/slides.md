@@ -46,7 +46,7 @@ as you would do in any other content:
 
 Use the Force!
 
-![Lightsabers](/images/light-saber.png)
+![Lightsabers](/images/xwing.jpg)
 
 ---
 
@@ -58,7 +58,15 @@ a cool **split effect**:
 ---
 
 ![Millennium Falcon](/images/millennium-falcon.png)
-![Lightsabers](/images/light-saber.png)
+![Lightsabers](/images/xwing.jpg)
+
+---
+
+# Embed HTML
+
+---
+
+<div class="w-full h-full bg-blue-500 text-white p-4 rounded">fooo</div>
 
 ---
 
