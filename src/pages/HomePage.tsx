@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { Play, Download, Upload, Plus, PanelLeft } from "lucide-react";
+import { Play, Download, Upload, Plus, PanelLeft, Share2 } from "lucide-react";
 import defaultSlidesContent from "@/slides.md?raw"; // Import raw markdown content
 import { Button } from "@/components/ui/button";
 import SlidesPreview from "@/components/SlidesPreview"; // Import the new component
@@ -17,6 +17,7 @@ const HomePage: React.FC = () => {
   const [activeSlideIndex, setActiveSlideIndex] = useState<number>(0);
   const textareaRef = useRef<HTMLTextAreaElement>(null); // Ref for the textarea
   const initialFocusDoneRef = useRef<boolean>(false); // Flag for initial focus
+  const fileInputRef = useRef<HTMLInputElement>(null); // Ref for the hidden file input
   const slides = useSlides(); // Use the hook to get processed slides
 
   useEffect(() => {
@@ -186,10 +187,16 @@ const HomePage: React.FC = () => {
     }
   }, [content]); // Depends on the current content
 
-  // Function to handle import
+  // Function to handle import - triggers the hidden file input
   const handleImport = useCallback(() => {
-    console.log("Import button clicked - implement logic here");
-  }, []); // Dependencies will be added when logic is implemented
+    fileInputRef.current?.click(); // Trigger click on the hidden input
+  }, []); // No dependencies needed here
+
+  // Placeholder for Share functionality
+  const handleShare = useCallback(() => {
+    console.log("Share button clicked - implement logic here");
+    // Potential implementation: Copy link, Web Share API, etc.
+  }, []);
 
   // Shared function to process imported content
   const processImportedContent = useCallback(
@@ -204,6 +211,49 @@ const HomePage: React.FC = () => {
     },
     [handlePreviewClick]
   ); // Added handlePreviewClick dependency
+
+  // Handles the file selection from the hidden input
+  const handleFileSelect = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      const file = event.target.files?.[0];
+      if (!file) {
+        return; // No file selected
+      }
+
+      // Basic check for markdown file types (optional, as 'accept' handles it)
+      if (
+        file.type !== "text/markdown" &&
+        !file.name.endsWith(".md") &&
+        !file.name.endsWith(".markdown")
+      ) {
+        window.alert(
+          "Error: Please select a Markdown file (.md or .markdown)."
+        );
+        // Reset input value to allow re-selection
+        if (event.target) event.target.value = "";
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = (loadEvent) => {
+        const fileContent = loadEvent.target?.result;
+        if (typeof fileContent === "string") {
+          processImportedContent(fileContent);
+        } else {
+          window.alert("Error: Could not read file content.");
+        }
+        // Reset input value to allow re-selection
+        if (event.target) event.target.value = "";
+      };
+      reader.onerror = () => {
+        window.alert(`Error: Failed to read file "${file.name}".`);
+        // Reset input value to allow re-selection
+        if (event.target) event.target.value = "";
+      };
+      reader.readAsText(file);
+    },
+    [processImportedContent] // Depends on the processing function
+  );
 
   // Use useCallback to memoize handlePresent for the effect dependency array
   const handlePresent = useCallback(() => {
@@ -638,6 +688,15 @@ const HomePage: React.FC = () => {
             <div className="flex justify-between sm:justify-start gap-2 sm:gap-4 w-full sm:w-auto">
               <Button
                 variant="outline"
+                onClick={handleImport}
+                title="Import Markdown"
+                className="flex items-center text-xs sm:text-sm h-8 px-2"
+              >
+                <Upload className="mr-1 sm:mr-2 h-3 sm:h-4 w-3 sm:w-4" />
+                Import
+              </Button>
+              <Button
+                variant="outline"
                 onClick={handleDownload}
                 title="Download Markdown"
                 className="flex items-center text-xs sm:text-sm h-8 px-2"
@@ -647,12 +706,12 @@ const HomePage: React.FC = () => {
               </Button>
               <Button
                 variant="outline"
-                onClick={handleImport}
-                title="Import Markdown"
+                onClick={handleShare}
+                title="Share Presentation (coming soon)"
                 className="flex items-center text-xs sm:text-sm h-8 px-2"
               >
-                <Upload className="mr-1 sm:mr-2 h-3 sm:h-4 w-3 sm:w-4" />
-                Import
+                <Share2 className="mr-1 sm:mr-2 h-3 sm:h-4 w-3 sm:w-4" />
+                Share
               </Button>
               <Button
                 variant="outline"
@@ -667,6 +726,15 @@ const HomePage: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Hidden File Input for Import */}
+      <input
+        type="file"
+        ref={fileInputRef}
+        onChange={handleFileSelect}
+        accept=".md,.markdown,text/markdown" // Specify accepted file types
+        style={{ display: "none" }} // Hide the element visually
+      />
     </div>
   );
 };
