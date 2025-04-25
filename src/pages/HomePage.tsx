@@ -457,11 +457,6 @@ const HomePage: React.FC = () => {
           navigate(`/slide/${startSlide}`);
         }
       }
-      // Handle Escape globally
-      else if (event.key === "Escape") {
-        event.preventDefault();
-        handleNewPresentation(); // Use the new handler
-      }
       // Handle Cmd/Ctrl + Arrow Up/Down
       else if (
         (event.key === "ArrowUp" || event.key === "ArrowDown") &&
@@ -497,7 +492,6 @@ const HomePage: React.FC = () => {
     content,
     activeSlideIndex,
     handlePresent,
-    handleNewPresentation, // Updated dependency
     handlePreviewClick,
     requestFullscreen,
     navigate,

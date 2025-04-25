@@ -4,11 +4,28 @@ for moments that really matter
 
 ---
 
-Your slides, as [Markdown](https://www.markdownguide.org) annotations
+## ⌨️ Just Markdown
+
+Write your slides in [Markdown](https://www.markdownguide.org).  
+Just as you write your documentation on GitHub
 
 ---
 
-# Full-Screen Images
+# 📱 Mobile First
+
+- Edit your slides from your phone
+- Swipe left/right to navigate your presentation
+- Swipe up/down to exit presentation mode
+
+---
+
+# 🚀 Share via QR Code
+
+Click on "share" and point a new device to the QR code.
+
+---
+
+# 🎇 Full-Screen Images
 
 If you put one single image in a slide,  
 it will render as a cover for such slide:
